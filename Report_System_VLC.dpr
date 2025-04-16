@@ -2,7 +2,7 @@ program Report_System_VLC;
 
 uses
   Vcl.Forms,
-  mainForm in 'mainForm.pas' {Form1},
+  mainCodeForm in 'mainCodeForm.pas' {MainForm},
   DataBase in 'DataBase.pas',
   BasicFunction in 'BasicFunction.pas';
 
@@ -11,6 +11,6 @@ uses
 begin
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
-  Application.CreateForm(TForm1, Form1);
+  Application.CreateForm(TMainForm, MainForm);
   Application.Run;
 end.

@@ -123,8 +123,8 @@
         <DelphiCompile Include="$(MainSource)">
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
-        <DCCReference Include="mainForm.pas">
-            <Form>Form1</Form>
+        <DCCReference Include="mainCodeForm.pas">
+            <Form>MainForm</Form>
             <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="DataBase.pas"/>
