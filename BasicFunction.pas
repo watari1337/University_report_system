@@ -3,6 +3,9 @@
 interface
 
 function ReadInt(min, max: integer): integer;
+procedure ReadRusStr(var str: string);
+procedure LowerRus(var s1: String);
+//procedure QuickSort(var arr: array of TPair);
 
 implementation
 
@@ -43,6 +46,36 @@ begin
    end;
 end;
 
+{procedure QuickSort(var arr: array of TPair);
+
+Procedure MyQuickSort(L,R: Integer);
+var
+  I, J: Integer;
+  X: string;
+  temp: TPair;
+begin
+  I:=L;
+  J:=R;
+  X:=arr[(L+R) div 2].name;
+  Repeat
+    While arr[I].name < X do Inc(I);
+    While arr[J].name > X do Dec(J);
+    If (I <= J) then begin
+      temp:= arr[I];
+      arr[I]:= arr[J];
+      arr[J]:= temp;
+      Inc(I);
+      Dec(J);
+    end
+  until I > J;
+  If J > L then MyQuickSort(L,J);
+  If I < R then MyQuickSort(I,R);
+end;
+
+begin
+  MyQuickSort(Low(arr), High(arr));
+end;}
+
 function ReadInt(min, max: integer): integer;
 var
     num: integer;
@@ -55,11 +88,14 @@ begin
         writeln('число должно быть больше ', min, ' и меньше ', max, ', повторите ввод');
       end;
     except
-      num:= min-1;
-      writeln('принимается только ввод чисел, повторите ввод');
+      on EInOutError do begin
+        num:= min-1;
+        writeln('принимается только ввод чисел, повторите ввод');
+      end;
     end;
   end;
-  result:= num
+  result:= num;
+  readln;   //съедаем строчку перехода после ввода чисел
 end;
 
 procedure LowerRus(var s1: String);
@@ -72,6 +108,35 @@ begin
     if (s1[i] >= 'А') and (s1[i] <= 'Я') then
       s1[i] := Chr(Ord(s1[i])+32)
   end;
+end;
+
+procedure BiggerRus(var s1: String);
+var
+  len, i: Integer;
+begin
+  len := Length(s1);
+  for i := 1 to len do
+  begin
+    if (s1[i] >= 'а') and (s1[i] <= 'я') then
+      s1[i] := Chr(Ord(s1[i])-32)
+  end;
+end;
+
+procedure ReadRusStr(var str: string);
+var
+  stop: boolean;
+begin
+  repeat
+    stop:= true;
+    readln(str);
+    str:= trim(str);
+    if (str = '') then begin
+      writeln('строка не должна быть пустой!');
+      stop:= false;
+    end;
+  until (stop);
+  if (rusLetters.contains(str[1])) then LowerRus(str)
+  else str:= LowerCase(str);
 end;
 
 function NumOfWords(str: string): integer;

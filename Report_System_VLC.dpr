@@ -4,7 +4,8 @@ uses
   Vcl.Forms,
   mainCodeForm in 'mainCodeForm.pas' {MainForm},
   DataBase in 'DataBase.pas',
-  BasicFunction in 'BasicFunction.pas';
+  BasicFunction in 'BasicFunction.pas',
+  Pattern in 'Pattern.pas';
 
 {$R *.res}
 

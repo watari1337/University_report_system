@@ -2,7 +2,10 @@
 
 interface
 
+uses System.SysUtils, Vcl.Dialogs;
+
 procedure createData();
+procedure loadData();
 
 type
     TLearntSubject = Record
@@ -16,10 +19,11 @@ type
       name: string[255]; //должность + ФИО
     End;
 
-    Tpattern = Record
+    {Tpattern = Record
       id: integer;
       name: string[100];
-    End;
+    End;}
+    TarrPattern = array of string;
 
 //    TSemester = Record
 //      value: integer;
@@ -69,6 +73,9 @@ type
 
     //это для типизированного файла, а в проге ещё в каждом должен быть адрес
     //элемента выше, чтобы зная студента можно было определять его семестр и предметы
+
+var
+  arrPattern: TArrPattern;
 
 implementation
 
@@ -238,6 +245,42 @@ begin
   createFileSBJ();
   createFileTeacher();
   createFileTLearntForm
+end;
+
+
+//записывает все файлы txt из папки pattarn в массив result
+function loadPattern(): TarrPattern;
+const
+  path: string = '.\Pattern\*.txt';
+var
+  searchResult: TSearchRec;
+  i: integer;
+begin
+  {if DirectoryExists(path) then begin
+
+  end
+  else showMessage('no data to read');}
+  SetLength(result, 10);
+  i:= 0;
+  if (FindFirst(path, FaAnyFile, searchResult) = 0) then begin
+    try
+      repeat
+        if (i >= length(result)) then SetLength(result, length(result)*2);
+        //result[i].id:= i;
+        result[i]:= searchResult.Name;
+        inc(i);
+        //showMessage(searchResult.Name);
+      until FindNext(searchResult) <> 0;
+    finally
+      FindClose(searchResult);
+    end;
+  end;
+
+end;
+
+procedure loadData();
+begin
+  arrPattern:= loadPattern();
 end;
 
 end.
