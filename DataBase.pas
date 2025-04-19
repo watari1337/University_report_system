@@ -7,12 +7,16 @@ uses System.SysUtils;
 procedure loadData();
 
 type
+    {Pair<T1, T2> = Record
+      id: T1;
+      name: T2;
+    End;}
+
     TLearntSubject = Record
       id: integer;
       name: string[100];
 //      teacher: string[100];
     End;
-
     TTeacher = Record
       id: integer;
       name: string[255]; //должность + ФИО
@@ -73,7 +77,8 @@ type
       //spisiality: array[0..10] of TSpisiality;
     End;
 
-    Tcompare<T> = function (first, second: T): boolean;
+    TCompare<T> = function(first, second: T): boolean;
+    TAllToString<T> = function(element: T): string;
 
     BaseClass<T> = class
       private
@@ -90,7 +95,7 @@ type
         destructor Destroy();
         procedure pushList(inf: T);
         procedure deleteNode(inf: T; func: Tcompare<T>);
-        procedure createPageShowList();
+        procedure createPageShowList(func: TAllToString<T>);
     end;
 
     //это для типизированного файла, а в проге ещё в каждом должен быть адрес
@@ -108,7 +113,7 @@ var
 
 implementation
 
-uses mainCodeForm, Vcl.Dialogs, Vcl.Graphics, Vcl.StdCtrls, Vcl.ExtCtrls;
+uses mainCodeForm, Vcl.Dialogs, Vcl.Graphics, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.Buttons;
 
 constructor BaseClass<T>.Create(strForOut: string);
 begin
@@ -160,37 +165,43 @@ begin
   end;
 end;
 
-procedure BaseClass<T>.createPageShowList();
+procedure BaseClass<T>.createPageShowList(func: TAllToString<T>);
 var
-  btn: TButton;
+  btn: TBitBtn;
   lbl: TLabel;
-  i: integer;
+  i, width: integer;
   temp: ^ListNode;
 begin
   lbl:= TLabel.Create(MainForm.ScrollBoxInfo);
   lbl.Parent:= MainForm.ScrollBoxInfo;
   lbl.Caption:= textForOut;
   lbl.Font.Size:= 14;
-  lbl.Left:= 20;
+  lbl.Left:= 40;
   lbl.Top:= 10;
   lbl.Height:= 40;
 
   i:= 0;
-  temp:= headList;
+  temp:= headList^.Next;
+  width:= MainForm.ScrollBoxInfo.ClientWidth - 70;
   while (temp <> nil) do
   begin
-    Btn := TButton.Create(MainForm.ScrollBoxInfo);
+    Btn := TBitBtn.Create(MainForm.ScrollBoxInfo);
     Btn.Parent := MainForm.ScrollBoxInfo;
-    Btn.Left := 20;
+    Btn.Left := 30;
     Btn.Top := I * 45 + 60;
-    Btn.Width := MainForm.ScrollBoxInfo.ClientWidth - 20;
+    Btn.Width := width;
     Btn.Height := 40;
-    //Btn.Caption := temp^.inf;
+    Btn.Caption := func(temp^.inf);
+    btn.Layout:= blGlyphLeft;
+    Btn.Margin := 4; // Отступ от левого края
     Btn.OnClick:= MainForm.PatternButtonAction;
     temp:= temp^.Next;
     inc(i);
   end;
 end;
+
+
+
 
 //записывает все файлы txt из папки pattarn в массив result
 function loadPattern(): TarrPattern;

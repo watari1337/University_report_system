@@ -6,9 +6,9 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
   Vcl.StdCtrls, Vcl.Imaging.jpeg, Vcl.ExtCtrls,
-  DataBase, BasicFunction, Pattern, DataCreate,
+  DataBase, BasicFunction, Pattern, DataCreate, funcCompareAndtoString,
   Vcl.ComCtrls, System.Actions,
-  Vcl.ActnList;
+  Vcl.ActnList, Vcl.Buttons;
 
 type
   TMainForm = class(TForm)
@@ -30,12 +30,25 @@ type
     Menu: TButton;
     PanelAllPage: TPanel;
     ScrollBoxInfo: TScrollBox;
+    PageMenuData: TTabSheet;
+    PanelRightMenuData: TPanel;
+    ButtonMenu: TButton;
+    PanelChooseData: TPanel;
+    Teacher: TButton;
+    LearntSubject: TButton;
+    Student: TButton;
+    Group: TButton;
+    Specialty: TButton;
+    LearntForm: TButton;
+    Faculty: TButton;
     procedure TestClick(Sender: TObject);
     procedure ExitClick(Sender: TObject);
     procedure createFileClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure GoBackMenuClick(Sender: TObject);
     procedure PatternButtonAction(sender: TObject);
+    procedure ChooseDataClick(Sender: TObject);
+    procedure ChangeDataClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -57,6 +70,32 @@ begin
 //    Writeln('[2] Изменить элементы базы данных');
 //    Writeln('[3] Добавить новый шаблон');
     //Writeln('[4] Выйти из программы');
+end;
+
+procedure TMainForm.ChangeDataClick(Sender: TObject);
+begin
+  PageControl1.ActivePageIndex:= 4;
+end;
+
+procedure ClearScrolBox(myBox: TScrollBox);
+begin
+  for var i:= 0 to myBox.ControlCount-1 do begin
+    myBox.Controls[0].Free;
+  end;
+end;
+
+procedure TMainForm.ChooseDataClick(Sender: TObject);
+begin
+  case (Sender as TButton).TabOrder of
+    0: objTTeacher.createPageShowList(@toStringTTeacher );
+    1: objTLearntSubject.createPageShowList(@toStringTLearntSubject);
+    2: objTStudent.createPageShowList(@toStringTStudent);
+    3: objTGroup.createPageShowList(@toStringTGroup);
+    4: objTSpecialty.createPageShowList(@toStringTSpecialty);
+    5: objTLearntForm.createPageShowList(@toStringTLearntForm);
+    6: objTFaculty.createPageShowList(@toStringTFaculty);
+  end;
+  PageControl1.ActivePageIndex:= 3;
 end;
 
 procedure TurnOnForm(formNow: TForm);
@@ -84,6 +123,7 @@ end;
 procedure TMainForm.GoBackMenuClick(Sender: TObject);
 begin
   PageControl1.ActivePageIndex:= 0;
+  if (Sender as TButton).Tag = 1 then ClearScrolBox(ScrollBoxInfo);
 end;
 
 procedure TMainForm.PatternButtonAction(sender: TObject);

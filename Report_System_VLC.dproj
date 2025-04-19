@@ -132,6 +132,7 @@
         <DCCReference Include="Pattern.pas"/>
         <DCCReference Include="DataCreate.pas"/>
         <DCCReference Include="show.pas"/>
+        <DCCReference Include="funcCompareAndtoString.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>

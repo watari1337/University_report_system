@@ -7,7 +7,8 @@ uses
   BasicFunction in 'BasicFunction.pas',
   Pattern in 'Pattern.pas',
   DataCreate in 'DataCreate.pas',
-  show in 'show.pas';
+  show in 'show.pas',
+  funcCompareAndtoString in 'funcCompareAndtoString.pas';
 
 {$R *.res}
 

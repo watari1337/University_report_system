@@ -17,11 +17,9 @@ object MainForm: TMainForm
     Top = 0
     Width = 1010
     Height = 590
-    ActivePage = ChangeDataBase
+    ActivePage = PageMenu
     Align = alClient
     TabOrder = 0
-    ExplicitWidth = 1008
-    ExplicitHeight = 596
     object PageMenu: TTabSheet
       Caption = 'PageMenu'
       TabVisible = False
@@ -22256,7 +22254,8 @@ object MainForm: TMainForm
         Anchors = []
         Caption = #1048#1079#1084#1077#1085#1077#1085#1080#1077' '#1041#1072#1079#1099' '#1076#1072#1085#1085#1099#1093
         TabOrder = 1
-        ExplicitTop = 273
+        OnClick = ChangeDataClick
+        ExplicitTop = 256
       end
       object changePattern: TButton
         Left = 709
@@ -22266,7 +22265,7 @@ object MainForm: TMainForm
         Anchors = []
         Caption = #1080#1079#1084#1077#1085#1077#1085#1080#1077' '#1096#1072#1073#1083#1086#1085#1086#1074
         TabOrder = 2
-        ExplicitTop = 184
+        ExplicitTop = 172
       end
       object createFile: TButton
         Left = 709
@@ -22283,7 +22282,7 @@ object MainForm: TMainForm
         ParentFont = False
         TabOrder = 3
         OnClick = createFileClick
-        ExplicitTop = 108
+        ExplicitTop = 101
       end
       object Exit: TButton
         Left = 709
@@ -22300,7 +22299,7 @@ object MainForm: TMainForm
         ParentFont = False
         TabOrder = 4
         OnClick = ExitClick
-        ExplicitTop = 361
+        ExplicitTop = 339
       end
     end
     object PageCreateByPattern: TTabSheet
@@ -22316,7 +22315,7 @@ object MainForm: TMainForm
         Color = clCream
         ParentBackground = False
         TabOrder = 0
-        ExplicitHeight = 594
+        ExplicitHeight = 560
         object GoBackMenu: TButton
           Left = 1
           Top = 1
@@ -22341,7 +22340,7 @@ object MainForm: TMainForm
         Height = 580
         Align = alClient
         TabOrder = 1
-        ExplicitHeight = 594
+        ExplicitHeight = 560
       end
     end
     object FileTextOut: TTabSheet
@@ -22363,8 +22362,9 @@ object MainForm: TMainForm
         ParentBackground = False
         TabOrder = 0
         ExplicitLeft = 815
-        ExplicitHeight = 586
+        ExplicitHeight = 572
         object Menu: TButton
+          Tag = 1
           Left = 1
           Top = 1
           Width = 183
@@ -22388,10 +22388,8 @@ object MainForm: TMainForm
         Height = 580
         Align = alClient
         TabOrder = 1
-        ExplicitLeft = 296
-        ExplicitTop = 280
-        ExplicitWidth = 185
-        ExplicitHeight = 41
+        ExplicitWidth = 815
+        ExplicitHeight = 572
         object ScrollBoxInfo: TScrollBox
           Left = 1
           Top = 1
@@ -22399,6 +22397,124 @@ object MainForm: TMainForm
           Height = 320
           Align = alTop
           TabOrder = 0
+          ExplicitWidth = 813
+        end
+      end
+    end
+    object PageMenuData: TTabSheet
+      Caption = 'PageMenuData'
+      ImageIndex = 4
+      TabVisible = False
+      object PanelRightMenuData: TPanel
+        Left = 817
+        Top = 0
+        Width = 185
+        Height = 580
+        Align = alRight
+        Color = clCream
+        ParentBackground = False
+        TabOrder = 0
+        ExplicitLeft = 815
+        ExplicitHeight = 572
+        object ButtonMenu: TButton
+          Left = 1
+          Top = 1
+          Width = 183
+          Height = 48
+          Align = alTop
+          Caption = #1052#1077#1085#1102
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -21
+          Font.Name = 'Segoe UI'
+          Font.Style = []
+          ParentFont = False
+          TabOrder = 0
+          OnClick = GoBackMenuClick
+        end
+      end
+      object PanelChooseData: TPanel
+        Left = 0
+        Top = 0
+        Width = 817
+        Height = 580
+        Align = alClient
+        TabOrder = 1
+        ExplicitLeft = 384
+        ExplicitTop = 240
+        ExplicitWidth = 185
+        ExplicitHeight = 41
+        object Teacher: TButton
+          Tag = 1
+          Left = 32
+          Top = 104
+          Width = 137
+          Height = 137
+          Caption = 'Teacher'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -12
+          Font.Name = 'Segoe UI'
+          Font.Style = []
+          ParentFont = False
+          TabOrder = 0
+          OnClick = ChooseDataClick
+        end
+        object LearntSubject: TButton
+          Tag = 2
+          Left = 232
+          Top = 104
+          Width = 137
+          Height = 137
+          Caption = 'LearntSubject'
+          TabOrder = 1
+          OnClick = ChooseDataClick
+        end
+        object Student: TButton
+          Tag = 3
+          Left = 432
+          Top = 104
+          Width = 137
+          Height = 137
+          Caption = 'Student'
+          TabOrder = 2
+          OnClick = ChooseDataClick
+        end
+        object Group: TButton
+          Left = 632
+          Top = 104
+          Width = 137
+          Height = 137
+          Caption = 'Group'
+          TabOrder = 3
+          OnClick = ChooseDataClick
+        end
+        object Specialty: TButton
+          Left = 128
+          Top = 320
+          Width = 137
+          Height = 137
+          Caption = 'Specialty'
+          TabOrder = 4
+          OnClick = ChooseDataClick
+        end
+        object LearntForm: TButton
+          Left = 328
+          Top = 320
+          Width = 137
+          Height = 137
+          Caption = 'LearntForm'
+          TabOrder = 5
+          OnClick = ChooseDataClick
+        end
+        object Faculty: TButton
+          Left = 536
+          Top = 320
+          Width = 137
+          Height = 137
+          Caption = 'Faculty'
+          TabOrder = 6
+          OnClick = ChooseDataClick
         end
       end
     end
