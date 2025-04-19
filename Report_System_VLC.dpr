@@ -5,7 +5,9 @@ uses
   mainCodeForm in 'mainCodeForm.pas' {MainForm},
   DataBase in 'DataBase.pas',
   BasicFunction in 'BasicFunction.pas',
-  Pattern in 'Pattern.pas';
+  Pattern in 'Pattern.pas',
+  DataCreate in 'DataCreate.pas',
+  show in 'show.pas';
 
 {$R *.res}
 

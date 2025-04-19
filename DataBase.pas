@@ -2,9 +2,8 @@
 
 interface
 
-uses System.SysUtils, Vcl.Dialogs;
+uses System.SysUtils;
 
-procedure createData();
 procedure loadData();
 
 type
@@ -31,8 +30,9 @@ type
 //    End;
 
     TStudent = Record
-      id: integer;
-      group: integer;
+      year: integer;
+      id: integer;  //группа + 2 цифры (номер студента )
+      //group: integer;
       name: String[100];
     End;
 
@@ -43,18 +43,20 @@ type
 
     TPairSemestrAndLearntSBJ = Record
       semestr: integer;
-      arrSbj: array[0..20] of TPairSabjectTeacher
+      numSBJ: integer;
+      arrSbj: array[0..19] of TPairSabjectTeacher
     End;
 
     TGroup = Record
       id: integer;
+      numSemestr: integer;
       arrSemestr: array[0..9] of TPairSemestrAndLearntSBJ;
     End;
 
-    TSpisiality = Record
+    TSpecialty = Record
       id: integer;
       facultyId: integer;
-      name: string[60];
+      name: string[255];
 //      semester: TSemester; //1-8
 //      subjects: array[1..15] of TSubject;
     End;
@@ -66,187 +68,129 @@ type
 
     TFaculty = Record
       id: integer;
-      name: string[60];
+      name: string[255];
       decanName: string[60];    //в дательном падеже
       //spisiality: array[0..10] of TSpisiality;
     End;
+
+    Tcompare<T> = function (first, second: T): boolean;
+
+    BaseClass<T> = class
+      private
+        type
+          ListNode = Record   //создание узла связного списка для любого указаного при создании типа T
+            inf: T;
+            Next: ^ListNode;
+          End;
+      private
+        headList: ^ListNode;
+        textForOut: string;
+      public
+        constructor Create(strForOut: string);
+        destructor Destroy();
+        procedure pushList(inf: T);
+        procedure deleteNode(inf: T; func: Tcompare<T>);
+        procedure createPageShowList();
+    end;
 
     //это для типизированного файла, а в проге ещё в каждом должен быть адрес
     //элемента выше, чтобы зная студента можно было определять его семестр и предметы
 
 var
   arrPattern: TArrPattern;
+  objTTeacher: BaseClass<TTeacher>;
+  objTLearntSubject: BaseClass<TLearntSubject>;
+  objTStudent : BaseClass<TStudent>;
+  objTGroup: BaseClass<TGroup>;
+  objTSpecialty: BaseClass<TSpecialty>;
+  objTLearntForm: BaseClass<TLearntForm>;
+  objTFaculty: BaseClass<TFaculty>;
 
 implementation
 
-Procedure createFileFaculty();
-const
-   nameFac: array[0..9] of string = (
-   'факультет довузовской подготовки и профессиональной ориентации',
-   'факультет компьютерной проектировки',
-   'факультет информационных технологий и управления',
-   'военный факультет',
-   'факультет радиотехники и электроники',
-   'факультет компьютерных систем и сетей',
-   'факультет инфокоммуникаций',
-   'инженерно-экономический факультет',
-   'институт информационных технологий',
-   'факультет инновационного образования'
-   );
-   nameDecan: array[0..9] of string = (
-   'Иванов Сергей Петрович', 'Петрова Анна Николаевна',
-   'Сидоров Алексей Иванович', 'Кузнецова Мария Александровна',
-   'Морозов Дмитрий Сергеевич', 'Васильева Ольга Викторовна',
-   'Николаев Павел Андреевич', 'Смирнова Екатерина Юрьевна',
-   'Козлов Игорь Михайлович', 'Лебедева Татьяна Олеговна'
-   );
-var
-   myFile: File of TFaculty;
-   temp: TFaculty;
+uses mainCodeForm, Vcl.Dialogs, Vcl.Graphics, Vcl.StdCtrls, Vcl.ExtCtrls;
+
+constructor BaseClass<T>.Create(strForOut: string);
 begin
-  AssignFile(myFile, 'Data\Faculty');
-  reWrite(myFile);
-  for var i:= Low(nameFac) to High(nameFac) do begin
-    temp.id:= i;
-    temp.name:= NameFac[i];
-    temp.decanName:= nameDecan[i];
-    Seek(myFile, i);
-    Write(myFile, temp);
+  //inherited;
+  textForOut:= strForOut;
+  if (headList = nil) then begin
+    new(headList);
+    headList^.Next:= nil;
   end;
-  CloseFile(myFile);
 end;
 
-Procedure createFileSBJ();
-const
-   nameSbj: array[0..49] of string = (
-   'математика', 'физика', 'химия', 'биология', 'информатика',
-   'программирование', 'история', 'философия', 'экономика', 'социология',
-    'психология', 'литература', 'русский язык', 'английский язык', 'немецкий язык',
-    'французский язык', 'политология', 'право', 'география', 'статистика',
-    'линейная алгебра', 'дифференциальные уравнения', 'теория вероятностей',
-    'алгоритмы', 'базы данных', 'компьютерные сети', 'искусственный интеллект',
-    'машинное обучение', 'физическая химия', 'органическая химия', 'генетика',
-    'экология', 'анатомия', 'микробиология', 'культурология', 'этика', 'логика',
-    'маркетинг', 'менеджмент', 'финансы', 'бухгалтерский учет', 'микроэкономика',
-    'макроэкономика', 'международные отношения', 'конституционное право',
-    'гражданское право', 'уголовное право', 'история искусства', 'архитектура', 'дизайн'
-   );
+destructor BaseClass<T>.Destroy();
 var
-   myFile: File of TLearntSubject;
-   temp: TLearntSubject;
+  Node: ^ListNode;
 begin
-  AssignFile(myFile, 'Data\Subject');
-  reWrite(myFile);
-  for var i:= Low(nameSbj) to High(nameSbj) do begin
-    temp.id:= i;
-    temp.name:= nameSbj[i];
-    Seek(myFile, i);
-    Write(myFile, temp);
+  while (headList <> nil) do begin
+    Node:= headList;
+    headList:= headList^.Next;
+    dispose(Node);
   end;
-  CloseFile(myFile);
+  //inherited;
 end;
 
-Procedure createFileTeacher();
-const
-   name: array[0..29] of string = (
-   'профессор кафедры математики, иванов пётр александрович',
-   'доцент кафедры физики, петрова анна сергеевна',
-   'профессор кафедры химии, смирнов дмитрий иванович',
-   'доцент кафедры биологии, соколов николай павлович',
-   'профессор кафедры информатики, кузнецова екатерина михайловна',
-   'доцент кафедры программирования, попов алексей викторович',
-   'профессор кафедры истории, васильева мария николаевна',
-   'доцент кафедры философии, морозов игорь олегович',
-   'профессор кафедры экономики, новикова ольга дмитриевна',
-   'доцент кафедры социологии, федоров сергей андреевич',
-   'профессор кафедры психологии, михайлова юлия владимировна',
-   'доцент кафедры литературы, белов владимир степанович',
-   'профессор кафедры русского языка, кравченко наталья игоревна',
-   'доцент кафедры английского языка, григорьев артем валерьевич',
-   'профессор кафедры политологии, орлова светлана алексеевна',
-   'доцент кафедры права, зотов андрей борисович',
-   'профессор кафедры географии, сидорова татьяна романовна',
-   'доцент кафедры статистики, лазарев михаил юрьевич',
-   'профессор кафедры линейной алгебры, воробьёва елена викторовна',
-   'доцент кафедры алгоритмов, гусев олег константинович',
-   'профессор кафедры баз данных, авдеева алина петровна',
-   'доцент кафедры компьютерных сетей, рябов виктор сергеевич',
-   'профессор кафедры искусственного интеллекта, королёва дарья александровна',
-   'доцент кафедры машинного обучения, тимофеев павел геннадьевич',
-   'профессор кафедры физической химии, борисова надежда фёдоровна',
-   'доцент кафедры органической химии, жуков леонид васильевич',
-   'профессор кафедры генетики, шарова вера николаевна',
-   'доцент кафедры экологии, котов даниил антонович',
-   'профессор кафедры анатомии, медведева лидия ивановна',
-   'доцент кафедры микробиологии, соловьёв ярослав эдуардович'
-   );
+procedure BaseClass<T>.pushList(inf: T);
 var
-   myFile: File of TTeacher;
-   temp: TTeacher;
+  Node: ^ListNode;
 begin
-  AssignFile(myFile, 'Data\Teacher');
-  reWrite(myFile);
-  for var i:= Low(name) to High(name) do begin
-    temp.id:= i;
-    temp.name:= name[i];
-    Seek(myFile, i);
-    Write(myFile, temp);
+  if (headList <> nil) then begin
+    new(Node);
+    Node^.inf:= inf;
+    Node^.Next:= headList^.Next;
+    headList^.Next:= Node;
   end;
-  CloseFile(myFile);
 end;
 
-Procedure createFileTLearntForm();
-const
-   name: array[0..8] of string = ('дневная', 'обучение студентов-граждан иностранных государств',
-   'вечера', 'заочка', 'дистанционная', 'интегрированная вечера', 'интегрированная заочка',
-   'интегрированная дистанционная', 'интегрированная дневная'
-   );
-   id: array[0..8] of integer = (0,1,3,4,5,6,7,8,9);
+procedure BaseClass<T>.deleteNode(inf: T; func: Tcompare<T>);
 var
-   myFile: File of TLearntForm;
-   temp: TLearntForm;
+  curNode, preNode, delNode: ^ListNode;
 begin
-  AssignFile(myFile, 'Data\LearntForm');
-  reWrite(myFile);
-  for var i:= Low(name) to High(name) do begin
-    temp.id:= id[i];
-    temp.name:= name[i];
-    Seek(myFile, i);
-    Write(myFile, temp);
+  curNode:= headList;
+  while (curNode <> nil) do begin
+    preNode:= curNode;
+    curNode:= curNode^.Next;
+    if (func(curNode^.inf, inf)) then begin
+      preNode^.Next:= curNode^.Next;
+      delNode:= curNode;
+      dispose(delNode);
+    end;
   end;
-  CloseFile(myFile);
 end;
 
-{Procedure createFileTLearntForm();
-const
-   name: array[0..8] of string = ('дневная', 'обучение студентов-граждан иностранных государств',
-   'вечера', 'заочка', 'дистанционная', 'интегрированная вечера', 'интегрированная заочка',
-   'интегрированная дистанционная', 'интегрированная дневная'
-   );
-   id: array[0..8] of integer = (0,1,3,4,5,6,7,8,9);
+procedure BaseClass<T>.createPageShowList();
 var
-   myFile: File of TLearntForm;
-   temp: TLearntForm;
+  btn: TButton;
+  lbl: TLabel;
+  i: integer;
+  temp: ^ListNode;
 begin
-  AssignFile(myFile, 'Data\LearntForm');
-  reWrite(myFile);
-  for var i:= Low(name) to High(name) do begin
-    temp.id:= id[i];
-    temp.name:= name[i];
-    Seek(myFile, i);
-    Write(myFile, temp);
+  lbl:= TLabel.Create(MainForm.ScrollBoxInfo);
+  lbl.Parent:= MainForm.ScrollBoxInfo;
+  lbl.Caption:= textForOut;
+  lbl.Font.Size:= 14;
+  lbl.Left:= 20;
+  lbl.Top:= 10;
+  lbl.Height:= 40;
+
+  i:= 0;
+  temp:= headList;
+  while (temp <> nil) do
+  begin
+    Btn := TButton.Create(MainForm.ScrollBoxInfo);
+    Btn.Parent := MainForm.ScrollBoxInfo;
+    Btn.Left := 20;
+    Btn.Top := I * 45 + 60;
+    Btn.Width := MainForm.ScrollBoxInfo.ClientWidth - 20;
+    Btn.Height := 40;
+    //Btn.Caption := temp^.inf;
+    Btn.OnClick:= MainForm.PatternButtonAction;
+    temp:= temp^.Next;
+    inc(i);
   end;
-  CloseFile(myFile);
-end;}
-
-procedure createData();
-begin
-  createFileFaculty();
-  createFileSBJ();
-  createFileTeacher();
-  createFileTLearntForm
 end;
-
 
 //записывает все файлы txt из папки pattarn в массив result
 function loadPattern(): TarrPattern;
@@ -278,9 +222,121 @@ begin
 
 end;
 
+Procedure loadFileTTeacher();
+var
+   myFile: File of TTeacher;
+   temp: TTeacher;
+begin
+  AssignFile(myFile, 'Data\Teacher');
+  reSet(myFile);
+  objTTeacher:= BaseClass<TTeacher>.Create('Id       Должность и ФИО');
+  while (not EOF(myFile)) do begin
+    Read(myFile, temp);
+    objTTeacher.pushList(temp);
+  end;
+  CloseFile(myFile);
+end;
+
+Procedure loadFileTLearntSubject();
+var
+   myFile: File of TLearntSubject;
+   temp: TLearntSubject;
+begin
+  AssignFile(myFile, 'Data\Subject');
+  reSet(myFile);
+  objTLearntSubject:= BaseClass<TLearntSubject>.Create('Id       Название предмета');
+  while (not EOF(myFile)) do begin
+    Read(myFile, temp);
+    objTLearntSubject.pushList(temp);
+  end;
+  CloseFile(myFile);
+end;
+
+Procedure loadFileTStudent();
+var
+   myFile: File of TStudent;
+   temp: TStudent;
+begin
+  AssignFile(myFile, 'Data\Student');
+  reSet(myFile);
+  objTStudent:=  BaseClass<TStudent>.Create('Id    Поступил       ФИО');
+  while (not EOF(myFile)) do begin
+    Read(myFile, temp);
+    objTStudent.pushList(temp);
+  end;
+  CloseFile(myFile);
+end;
+
+Procedure loadFileTGroup();
+var
+   myFile: File of TGroup;
+   temp: TGroup;
+begin
+  AssignFile(myFile, 'Data\Group');
+  reSet(myFile);
+  objTGroup:=  BaseClass<TGroup>.Create('Id    Семестр       id предмета и id преподователя');
+  while (not EOF(myFile)) do begin
+    Read(myFile, temp);
+    objTGroup.pushList(temp);
+  end;
+  CloseFile(myFile);
+end;
+
+Procedure loadFileTSpecialty();
+var
+   myFile: File of TSpecialty;
+   temp: TSpecialty;
+begin
+  AssignFile(myFile, 'Data\Specialty');
+  reSet(myFile);
+  objTSpecialty:=  BaseClass<TSpecialty>.Create('Id    id факультета      Имя декана');
+  while (not EOF(myFile)) do begin
+    Read(myFile, temp);
+    objTSpecialty.pushList(temp);
+  end;
+  CloseFile(myFile);
+end;
+
+Procedure loadFileTLearntForm();
+var
+   myFile: File of TLearntForm;
+   temp: TLearntForm;
+begin
+  AssignFile(myFile, 'Data\LearntForm');
+  reSet(myFile);
+  objTLearntForm:=  BaseClass<TLearntForm>.Create('Id    Форма обучения');
+  while (not EOF(myFile)) do begin
+    Read(myFile, temp);
+    objTLearntForm.pushList(temp);
+  end;
+  CloseFile(myFile);
+end;
+
+Procedure loadFileTFaculty();
+var
+   myFile: File of TFaculty;
+   temp: TFaculty;
+begin
+  AssignFile(myFile, 'Data\Faculty');
+  reSet(myFile);
+  objTFaculty:=  BaseClass<TFaculty>.Create('Id    Факультет      Имя декана');
+  while (not EOF(myFile)) do begin
+    Read(myFile, temp);
+    objTFaculty.pushList(temp);
+  end;
+  CloseFile(myFile);
+end;
+
 procedure loadData();
 begin
   arrPattern:= loadPattern();
+  loadFileTTeacher();
+  loadFileTStudent();
+  loadFileTLearntSubject();
+  loadFileTSpecialty();
+  loadFileTGroup();
+  loadFileTLearntForm();
+  loadFileTFaculty();
 end;
 
 end.

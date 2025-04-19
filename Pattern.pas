@@ -2,7 +2,13 @@
 
 interface
 
-type SArr = array of string;
+type
+    Pair = Record
+      index: integer;
+      text: string;
+    End;
+
+    SArr = array of Pair;
 
 procedure CreateObjectPattern();
 function ListOfWords(fileName: string): SArr;
@@ -13,7 +19,8 @@ uses System.SysUtils, BasicFunction, mainCodeForm,
      Vcl.Graphics, Vcl.StdCtrls, Vcl.ExtCtrls, DataBase;
 
 
-//по файлу создаёт возвращает массив из всех нужных слов в долларах
+//по файлу создаёт возвращает массив из всех нужных слов в долларах, в виде
+//записи где есть сама строка и новер символа где это слово в строке
 function ListOfWords(fileName: string): SArr;
 const
   goodWords: array[0..18] of string = ('фио','деканд','допфио','группафио',
@@ -21,7 +28,7 @@ const
   'дата','моядата','формаобучения','пересдач','телефон','печать',
   'местопредъявления','видзанятий');
 var
-  startPos, endPos, wordNow, i: integer;
+  startPos, endPos, wordNow, i, maxIndex: integer;
   findDollar, find2Dollar, isGoodWord, stop: boolean;
   word, str: string;
   myFile: textFile;
@@ -31,6 +38,7 @@ begin
 
   setLength(result, 4);
   wordNow := 0;
+  maxIndex:= 0;
   While (not EOf(myFile)) do begin
     Readln(myFile, Str);
     findDollar := False;
@@ -58,7 +66,8 @@ begin
         end;
         if (isGoodWord) then begin
           if (wordNow >= length(result)) then setLength(result, length(result)*2);
-          result[wordNow] := word;
+          result[wordNow].index:= startPos + maxIndex;
+          result[wordNow].text:= word;
           inc(wordNow);
         end;
 
@@ -66,12 +75,14 @@ begin
         startPos:= endPos+2;
       end;
     end;
+    inc(maxIndex, length(str));
   end;
+  closeFile(myFile);
   //обрезаем массив только до нужных значений
   stop:= false;
   i:= 0;
   while (i < length(result)) and (stop = false) do begin
-    if (result[i] = '') then begin
+    if (result[i].text = '') then begin
       SetLength(result, i);
       stop:= true;
     end;

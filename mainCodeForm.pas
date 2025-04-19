@@ -6,7 +6,7 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
   Vcl.StdCtrls, Vcl.Imaging.jpeg, Vcl.ExtCtrls,
-  DataBase, BasicFunction, Pattern,
+  DataBase, BasicFunction, Pattern, DataCreate,
   Vcl.ComCtrls, System.Actions,
   Vcl.ActnList;
 
@@ -25,6 +25,11 @@ type
     GoBackMenu: TButton;
     ScrollBoxPattern: TScrollBox;
     FileTextOut: TTabSheet;
+    ChangeDataBase: TTabSheet;
+    PanelRight: TPanel;
+    Menu: TButton;
+    PanelAllPage: TPanel;
+    ScrollBoxInfo: TScrollBox;
     procedure TestClick(Sender: TObject);
     procedure ExitClick(Sender: TObject);
     procedure createFileClick(Sender: TObject);

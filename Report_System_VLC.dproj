@@ -130,6 +130,8 @@
         <DCCReference Include="DataBase.pas"/>
         <DCCReference Include="BasicFunction.pas"/>
         <DCCReference Include="Pattern.pas"/>
+        <DCCReference Include="DataCreate.pas"/>
+        <DCCReference Include="show.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>

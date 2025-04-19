@@ -2,7 +2,7 @@ object MainForm: TMainForm
   Left = 0
   Top = 0
   Caption = 'MainForm'
-  ClientHeight = 604
+  ClientHeight = 590
   ClientWidth = 1010
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -16,8 +16,8 @@ object MainForm: TMainForm
     Left = 0
     Top = 0
     Width = 1010
-    Height = 604
-    ActivePage = PageCreateByPattern
+    Height = 590
+    ActivePage = ChangeDataBase
     Align = alClient
     TabOrder = 0
     ExplicitWidth = 1008
@@ -27,12 +27,12 @@ object MainForm: TMainForm
       TabVisible = False
       DesignSize = (
         1002
-        594)
+        580)
       object BG: TImage
         Left = 0
         Top = 0
         Width = 1002
-        Height = 594
+        Height = 580
         Align = alClient
         Picture.Data = {
           0A544A504547496D61676510D60A00FFD8FFE000104A46494600010201004800
@@ -22249,26 +22249,28 @@ object MainForm: TMainForm
         OnClick = TestClick
       end
       object ChangeData: TButton
-        Left = 708
-        Top = 273
+        Left = 709
+        Top = 266
         Width = 209
         Height = 49
         Anchors = []
         Caption = #1048#1079#1084#1077#1085#1077#1085#1080#1077' '#1041#1072#1079#1099' '#1076#1072#1085#1085#1099#1093
         TabOrder = 1
+        ExplicitTop = 273
       end
       object changePattern: TButton
-        Left = 708
-        Top = 184
+        Left = 709
+        Top = 179
         Width = 209
         Height = 49
         Anchors = []
         Caption = #1080#1079#1084#1077#1085#1077#1085#1080#1077' '#1096#1072#1073#1083#1086#1085#1086#1074
         TabOrder = 2
+        ExplicitTop = 184
       end
       object createFile: TButton
-        Left = 708
-        Top = 108
+        Left = 709
+        Top = 105
         Width = 209
         Height = 49
         Anchors = []
@@ -22281,10 +22283,11 @@ object MainForm: TMainForm
         ParentFont = False
         TabOrder = 3
         OnClick = createFileClick
+        ExplicitTop = 108
       end
       object Exit: TButton
-        Left = 708
-        Top = 361
+        Left = 709
+        Top = 352
         Width = 209
         Height = 49
         Anchors = []
@@ -22297,6 +22300,7 @@ object MainForm: TMainForm
         ParentFont = False
         TabOrder = 4
         OnClick = ExitClick
+        ExplicitTop = 361
       end
     end
     object PageCreateByPattern: TTabSheet
@@ -22307,13 +22311,12 @@ object MainForm: TMainForm
         Left = 817
         Top = 0
         Width = 185
-        Height = 594
+        Height = 580
         Align = alRight
         Color = clCream
         ParentBackground = False
         TabOrder = 0
-        ExplicitLeft = 815
-        ExplicitHeight = 586
+        ExplicitHeight = 594
         object GoBackMenu: TButton
           Left = 1
           Top = 1
@@ -22335,17 +22338,69 @@ object MainForm: TMainForm
         Left = 0
         Top = 0
         Width = 817
-        Height = 594
+        Height = 580
         Align = alClient
         TabOrder = 1
-        ExplicitWidth = 815
-        ExplicitHeight = 586
+        ExplicitHeight = 594
       end
     end
     object FileTextOut: TTabSheet
       Caption = 'FileTextOut'
       ImageIndex = 2
       TabVisible = False
+    end
+    object ChangeDataBase: TTabSheet
+      Caption = 'ChangeDataBase'
+      ImageIndex = 3
+      TabVisible = False
+      object PanelRight: TPanel
+        Left = 817
+        Top = 0
+        Width = 185
+        Height = 580
+        Align = alRight
+        Color = clCream
+        ParentBackground = False
+        TabOrder = 0
+        ExplicitLeft = 815
+        ExplicitHeight = 586
+        object Menu: TButton
+          Left = 1
+          Top = 1
+          Width = 183
+          Height = 48
+          Align = alTop
+          Caption = #1052#1077#1085#1102
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -21
+          Font.Name = 'Segoe UI'
+          Font.Style = []
+          ParentFont = False
+          TabOrder = 0
+          OnClick = GoBackMenuClick
+        end
+      end
+      object PanelAllPage: TPanel
+        Left = 0
+        Top = 0
+        Width = 817
+        Height = 580
+        Align = alClient
+        TabOrder = 1
+        ExplicitLeft = 296
+        ExplicitTop = 280
+        ExplicitWidth = 185
+        ExplicitHeight = 41
+        object ScrollBoxInfo: TScrollBox
+          Left = 1
+          Top = 1
+          Width = 815
+          Height = 320
+          Align = alTop
+          TabOrder = 0
+        end
+      end
     end
   end
 end
