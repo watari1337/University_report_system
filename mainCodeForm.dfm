@@ -17,16 +17,18 @@ object MainForm: TMainForm
     Top = 0
     Width = 1010
     Height = 590
-    ActivePage = PageMenu
+    ActivePage = ChangeDataBase
     Align = alClient
     TabOrder = 0
+    ExplicitWidth = 1008
+    ExplicitHeight = 582
     object PageMenu: TTabSheet
       Caption = 'PageMenu'
       TabVisible = False
       DesignSize = (
         1002
         580)
-      object BG: TImage
+      object Image1: TImage
         Left = 0
         Top = 0
         Width = 1002
@@ -22227,9 +22229,10 @@ object MainForm: TMainForm
           D7BD966E3C1200000000000000000000000000000000002F506BF79050000000
           000000000000000000000000000000000000000000000000000000001FFFD9}
         Stretch = True
-        ExplicitLeft = 8
-        ExplicitWidth = 1010
-        ExplicitHeight = 602
+        ExplicitLeft = 440
+        ExplicitTop = 368
+        ExplicitWidth = 105
+        ExplicitHeight = 105
       end
       object Test: TButton
         Left = 48
@@ -22247,7 +22250,7 @@ object MainForm: TMainForm
         OnClick = TestClick
       end
       object ChangeData: TButton
-        Left = 709
+        Left = 712
         Top = 266
         Width = 209
         Height = 49
@@ -22255,20 +22258,22 @@ object MainForm: TMainForm
         Caption = #1048#1079#1084#1077#1085#1077#1085#1080#1077' '#1041#1072#1079#1099' '#1076#1072#1085#1085#1099#1093
         TabOrder = 1
         OnClick = ChangeDataClick
-        ExplicitTop = 256
+        ExplicitLeft = 710
+        ExplicitTop = 262
       end
       object changePattern: TButton
-        Left = 709
+        Left = 712
         Top = 179
         Width = 209
         Height = 49
         Anchors = []
         Caption = #1080#1079#1084#1077#1085#1077#1085#1080#1077' '#1096#1072#1073#1083#1086#1085#1086#1074
         TabOrder = 2
-        ExplicitTop = 172
+        ExplicitLeft = 710
+        ExplicitTop = 176
       end
       object createFile: TButton
-        Left = 709
+        Left = 712
         Top = 105
         Width = 209
         Height = 49
@@ -22282,10 +22287,11 @@ object MainForm: TMainForm
         ParentFont = False
         TabOrder = 3
         OnClick = createFileClick
-        ExplicitTop = 101
+        ExplicitLeft = 710
+        ExplicitTop = 103
       end
       object Exit: TButton
-        Left = 709
+        Left = 712
         Top = 352
         Width = 209
         Height = 49
@@ -22299,7 +22305,8 @@ object MainForm: TMainForm
         ParentFont = False
         TabOrder = 4
         OnClick = ExitClick
-        ExplicitTop = 339
+        ExplicitLeft = 710
+        ExplicitTop = 347
       end
     end
     object PageCreateByPattern: TTabSheet
@@ -22315,8 +22322,8 @@ object MainForm: TMainForm
         Color = clCream
         ParentBackground = False
         TabOrder = 0
-        ExplicitHeight = 560
         object GoBackMenu: TButton
+          Tag = 2
           Left = 1
           Top = 1
           Width = 183
@@ -22340,7 +22347,6 @@ object MainForm: TMainForm
         Height = 580
         Align = alClient
         TabOrder = 1
-        ExplicitHeight = 560
       end
     end
     object FileTextOut: TTabSheet
@@ -22361,8 +22367,6 @@ object MainForm: TMainForm
         Color = clCream
         ParentBackground = False
         TabOrder = 0
-        ExplicitLeft = 815
-        ExplicitHeight = 572
         object Menu: TButton
           Tag = 1
           Left = 1
@@ -22388,16 +22392,27 @@ object MainForm: TMainForm
         Height = 580
         Align = alClient
         TabOrder = 1
-        ExplicitWidth = 815
-        ExplicitHeight = 572
         object ScrollBoxInfo: TScrollBox
           Left = 1
           Top = 1
           Width = 815
-          Height = 320
+          Height = 352
           Align = alTop
           TabOrder = 0
-          ExplicitWidth = 813
+        end
+        object ButtonAddElement: TButton
+          Left = 24
+          Top = 376
+          Width = 185
+          Height = 41
+          Caption = #1044#1086#1073#1072#1074#1080#1090#1100
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -21
+          Font.Name = 'Segoe UI'
+          Font.Style = []
+          ParentFont = False
+          TabOrder = 1
         end
       end
     end
@@ -22414,8 +22429,6 @@ object MainForm: TMainForm
         Color = clCream
         ParentBackground = False
         TabOrder = 0
-        ExplicitLeft = 815
-        ExplicitHeight = 572
         object ButtonMenu: TButton
           Left = 1
           Top = 1
@@ -22439,11 +22452,8 @@ object MainForm: TMainForm
         Width = 817
         Height = 580
         Align = alClient
+        BevelOuter = bvLowered
         TabOrder = 1
-        ExplicitLeft = 384
-        ExplicitTop = 240
-        ExplicitWidth = 185
-        ExplicitHeight = 41
         object Teacher: TButton
           Tag = 1
           Left = 32

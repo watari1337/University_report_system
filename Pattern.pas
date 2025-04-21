@@ -12,11 +12,13 @@ type
 
 procedure CreateObjectPattern();
 function ListOfWords(fileName: string): SArr;
+procedure CreateAskTexBox(arr: SArr);
+function checkEdit(): boolean;
 
 implementation
 
 uses System.SysUtils, BasicFunction, mainCodeForm,
-     Vcl.Graphics, Vcl.StdCtrls, Vcl.ExtCtrls, DataBase;
+     Vcl.StdCtrls, Vcl.ExtCtrls, DataBase, Vcl.Buttons, Vcl.Graphics;
 
 
 //по файлу создаёт возвращает массив из всех нужных слов в долларах, в виде
@@ -97,7 +99,7 @@ const
 var
   btn: TButton;
   lbl: TLabel;
-  i: integer;
+  i, width: integer;
 begin
 
   lbl:= TLabel.Create(MainForm.ScrollBoxPattern);
@@ -109,18 +111,83 @@ begin
   lbl.Height:= 40;
 
   i:= 0;
+  width:= MainForm.ScrollBoxPattern.ClientWidth - 40;
   while (arrPattern[i] <> '') do
   begin
-    Btn := TButton.Create(MainForm.ScrollBoxPattern);
-    Btn.Parent := MainForm.ScrollBoxPattern;
-    Btn.Left := 20;
-    Btn.Top := I * 45 + 60;
-    Btn.Width := MainForm.ScrollBoxPattern.ClientWidth - 20;
-    Btn.Height := 40;
-    Btn.Caption := arrPattern[i];
+    Btn:= TButton.Create(MainForm.ScrollBoxPattern);
+    Btn.Parent:= MainForm.ScrollBoxPattern;
+    Btn.Left:= 20;
+    Btn.Top:= I * 45 + 60;
+    Btn.Width:= width;
+    Btn.Height:= 40;
+    Btn.Caption:= arrPattern[i];
     Btn.OnClick:= MainForm.PatternButtonAction;
     inc(i);
   end;
 end;
+
+procedure CreateAskTexBox(arr: SArr);
+const
+  goodWords: array[0..8] of string = ('фио','допфио','предмет','моядата',
+  'пересдач','телефон','печать', 'местопредъявления','видзанятий');
+var
+  myEdit: TEdit;
+  btn: TButton;
+  panel: TPanel;
+  top, width: integer;
+begin
+  Btn:= TButton.Create(MainForm.ScrollBoxPattern);
+  Btn.Parent:= MainForm.ScrollBoxPattern;
+  Btn.Left:= MainForm.ScrollBoxPattern.ClientWidth - 220;
+  Btn.Top:= 10;
+  Btn.Width:= 200;
+  Btn.Height:= 40;
+  btn.Caption:= 'готово';
+  btn.OnClick:= MainForm.ReadyButtonClick;
+
+  {panel:= TPanel.Create(MainForm.ScrollBoxPattern);
+  panel.parent:= MainForm.ScrollBoxPattern;
+  panel.Caption:= 'готово';
+  panel.Color:= clGreen;
+  panel.Left:= MainForm.ScrollBoxPattern.ClientWidth - 220;
+  panel.Top:= 10;
+  panel.Width:= 200;
+  panel.Height:= 40;}
+
+  top:= 65;
+  width:= MainForm.ScrollBoxPattern.ClientWidth - 40;
+  for var i:= Low(arr) to High(arr) do begin
+    for var j:= Low(goodWords) to High(goodWords) do begin
+      if (arr[i].text = goodWords[j]) then begin
+        myEdit:= TEdit.Create(MainForm.ScrollBoxPattern);
+        myEdit.Parent:= MainForm.ScrollBoxPattern;
+        myEdit.Left:= 20;
+        myEdit.Top:= top;
+        myEdit.Width:= width;
+        myEdit.Height:= 40;
+        myEdit.TextHint:= 'Введите ' + arr[i].text;
+        inc(top, 45);
+      end;
+    end;
+  end;
+end;
+
+function checkEdit(): boolean;
+var
+  myEdit: TEdit;
+begin
+  result:= true;
+  for var i:= 0 to MainForm.ScrollBoxPattern.ControlCount - 1 do begin
+    if (MainForm.ScrollBoxPattern.Controls[i] is TEdit) then begin
+      myEdit:= (MainForm.ScrollBoxPattern.Controls[i] as TEdit);
+      if (myEdit.Text = '') then begin //and (myEdit.tag <> 0)
+        myEdit.Color:= $005858FF;
+        result:= false;
+      end
+      else myEdit.Color:= clWebMediumSpringGreen;
+    end;
+  end;
+end;
+
 
 end.

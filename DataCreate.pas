@@ -1,4 +1,4 @@
-unit DataCreate;
+﻿unit DataCreate;
 
 interface
 
@@ -240,10 +240,10 @@ begin
   reWrite(myFile);
   for var i:= 0 to 6 do begin
     tempG.id:= idGroup[i];
-    tempG.numSemestr:= Random(4)+6;
+    tempG.numSemestr:= Random(4)+6; //от 6 до 10
     for var j:= 0 to tempG.numSemestr-1 do begin
       tempSem.semestr:= (j+1);
-      tempSem.numSBJ:= Random(Length(tempSem.arrSBJ)-6)+6;
+      tempSem.numSBJ:= Random(Length(tempSem.arrSBJ)-10)+10;
       for var k:= 0 to tempSem.numSBJ-1 do begin
         tempSt.sbj:= Random(maxSBJ);
         tempSt.teacher:= Random(maxTeacher);

@@ -12,7 +12,6 @@ uses
 
 type
   TMainForm = class(TForm)
-    BG: TImage;
     createFile: TButton;
     ChangeData: TButton;
     Exit: TButton;
@@ -41,6 +40,9 @@ type
     Specialty: TButton;
     LearntForm: TButton;
     Faculty: TButton;
+    Image1: TImage;
+    ButtonAddElement: TButton;
+    procedure ReadyButtonClick(Sender: TObject);
     procedure TestClick(Sender: TObject);
     procedure ExitClick(Sender: TObject);
     procedure createFileClick(Sender: TObject);
@@ -70,6 +72,11 @@ begin
 //    Writeln('[2] Изменить элементы базы данных');
 //    Writeln('[3] Добавить новый шаблон');
     //Writeln('[4] Выйти из программы');
+end;
+
+procedure TMainForm.ReadyButtonClick(Sender: TObject);
+begin
+  checkEdit();
 end;
 
 procedure TMainForm.ChangeDataClick(Sender: TObject);
@@ -112,6 +119,7 @@ end;
 
 procedure TMainForm.createFileClick(Sender: TObject);
 begin
+  CreateObjectPattern();
   PageControl1.ActivePageIndex:= 1;
 end;
 
@@ -124,18 +132,23 @@ procedure TMainForm.GoBackMenuClick(Sender: TObject);
 begin
   PageControl1.ActivePageIndex:= 0;
   if (Sender as TButton).Tag = 1 then ClearScrolBox(ScrollBoxInfo);
+  if (Sender as TButton).Tag = 2 then ClearScrolBox(ScrollBoxPattern);
 end;
 
 procedure TMainForm.PatternButtonAction(sender: TObject);
+var
+  findWords: SArr;
 begin
-  ListOfWords((sender as Tbutton).Caption);
+  findWords:= ListOfWords((sender as Tbutton).Caption);
+  ClearScrolBox(ScrollBoxPattern);
+  CreateAskTexBox(findWords);
+
 end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
   PageControl1.ActivePageIndex:= 0;
   loadData();
-  CreateObjectPattern();
 end;
 
 end.

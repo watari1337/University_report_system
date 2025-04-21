@@ -117,7 +117,7 @@ var
 begin
   i:= 0;
   while (i < length(element)) do begin
-    result:= intToStr(element[i].sbj) + '  ' + intToStr(element[i].teacher);
+    result:= result + intToStr(element[i].sbj) + '  ' + intToStr(element[i].teacher);
     inc(i);
   end;
 end;
@@ -128,8 +128,8 @@ var
 begin
   i:= 0;
   while (i < length(element)) do begin
-    result:= intToStr(element[i].semestr) + '  '  + intToStr(element[i].numSBJ) +
-    ToStringTPairSabjectTeacher(element[i].arrSbj[i]);
+    result:= result + '  ' + intToStr(element[i].semestr) + '  '  + intToStr(element[i].numSBJ) +
+    ToStringTPairSabjectTeacher(element[i].arrSbj[i]) + sLineBreak;
     inc(i);
   end;
 end;

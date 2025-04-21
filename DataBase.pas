@@ -300,7 +300,7 @@ var
 begin
   AssignFile(myFile, 'Data\Specialty');
   reSet(myFile);
-  objTSpecialty:=  BaseClass<TSpecialty>.Create('Id    id факультета      Имя декана');
+  objTSpecialty:=  BaseClass<TSpecialty>.Create('Id    id факультета      Имя специальности');
   while (not EOF(myFile)) do begin
     Read(myFile, temp);
     objTSpecialty.pushList(temp);
