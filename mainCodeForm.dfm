@@ -22258,8 +22258,6 @@ object MainForm: TMainForm
         Caption = #1048#1079#1084#1077#1085#1077#1085#1080#1077' '#1041#1072#1079#1099' '#1076#1072#1085#1085#1099#1093
         TabOrder = 1
         OnClick = ChangeDataClick
-        ExplicitLeft = 710
-        ExplicitTop = 262
       end
       object changePattern: TButton
         Left = 712
@@ -22269,8 +22267,6 @@ object MainForm: TMainForm
         Anchors = []
         Caption = #1080#1079#1084#1077#1085#1077#1085#1080#1077' '#1096#1072#1073#1083#1086#1085#1086#1074
         TabOrder = 2
-        ExplicitLeft = 710
-        ExplicitTop = 176
       end
       object createFile: TButton
         Left = 712
@@ -22287,8 +22283,6 @@ object MainForm: TMainForm
         ParentFont = False
         TabOrder = 3
         OnClick = createFileClick
-        ExplicitLeft = 710
-        ExplicitTop = 103
       end
       object Exit: TButton
         Left = 712
@@ -22305,8 +22299,6 @@ object MainForm: TMainForm
         ParentFont = False
         TabOrder = 4
         OnClick = ExitClick
-        ExplicitLeft = 710
-        ExplicitTop = 347
       end
     end
     object PageCreateByPattern: TTabSheet
@@ -22367,6 +22359,8 @@ object MainForm: TMainForm
         Color = clCream
         ParentBackground = False
         TabOrder = 0
+        ExplicitLeft = 815
+        ExplicitHeight = 572
         object Menu: TButton
           Tag = 1
           Left = 1
@@ -22384,6 +22378,48 @@ object MainForm: TMainForm
           TabOrder = 0
           OnClick = GoBackMenuClick
         end
+        object BtnDelete: TButton
+          Left = 1
+          Top = 71
+          Width = 183
+          Height = 49
+          Action = deleteData
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -21
+          Font.Name = 'Segoe UI'
+          Font.Style = []
+          ParentFont = False
+          TabOrder = 1
+        end
+        object BtnAddElement: TButton
+          Left = 0
+          Top = 142
+          Width = 185
+          Height = 49
+          Action = AddData
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -21
+          Font.Name = 'Segoe UI'
+          Font.Style = []
+          ParentFont = False
+          TabOrder = 2
+        end
+        object BtnEditElement: TButton
+          Left = 0
+          Top = 214
+          Width = 185
+          Height = 49
+          Action = editData
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -21
+          Font.Name = 'Segoe UI'
+          Font.Style = []
+          ParentFont = False
+          TabOrder = 3
+        end
       end
       object PanelAllPage: TPanel
         Left = 0
@@ -22392,27 +22428,18 @@ object MainForm: TMainForm
         Height = 580
         Align = alClient
         TabOrder = 1
-        object ScrollBoxInfo: TScrollBox
+        ExplicitWidth = 815
+        ExplicitHeight = 572
+        object LVShowData: TListView
           Left = 1
           Top = 1
           Width = 815
-          Height = 352
-          Align = alTop
+          Height = 578
+          Align = alClient
+          Columns = <>
+          RowSelect = True
           TabOrder = 0
-        end
-        object ButtonAddElement: TButton
-          Left = 24
-          Top = 376
-          Width = 185
-          Height = 41
-          Caption = #1044#1086#1073#1072#1074#1080#1090#1100
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clWindowText
-          Font.Height = -21
-          Font.Name = 'Segoe UI'
-          Font.Style = []
-          ParentFont = False
-          TabOrder = 1
+          ViewStyle = vsReport
         end
       end
     end
@@ -22467,7 +22494,7 @@ object MainForm: TMainForm
           Font.Name = 'Segoe UI'
           Font.Style = []
           ParentFont = False
-          TabOrder = 0
+          TabOrder = 1
           OnClick = ChooseDataClick
         end
         object LearntSubject: TButton
@@ -22477,7 +22504,7 @@ object MainForm: TMainForm
           Width = 137
           Height = 137
           Caption = 'LearntSubject'
-          TabOrder = 1
+          TabOrder = 0
           OnClick = ChooseDataClick
         end
         object Student: TButton
@@ -22514,7 +22541,7 @@ object MainForm: TMainForm
           Width = 137
           Height = 137
           Caption = 'LearntForm'
-          TabOrder = 5
+          TabOrder = 6
           OnClick = ChooseDataClick
         end
         object Faculty: TButton
@@ -22523,10 +22550,27 @@ object MainForm: TMainForm
           Width = 137
           Height = 137
           Caption = 'Faculty'
-          TabOrder = 6
+          TabOrder = 5
           OnClick = ChooseDataClick
         end
       end
+    end
+  end
+  object ActionList1: TActionList
+    Left = 684
+    Top = 518
+    object deleteData: TAction
+      Category = 'data'
+      Caption = #1059#1076#1072#1083#1080#1090#1100
+      ShortCut = 46
+    end
+    object AddData: TAction
+      Category = 'data'
+      Caption = #1044#1086#1073#1072#1074#1080#1090#1100
+    end
+    object editData: TAction
+      Category = 'data'
+      Caption = #1048#1079#1084#1077#1085#1080#1090#1100
     end
   end
 end

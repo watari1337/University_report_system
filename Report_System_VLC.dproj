@@ -133,6 +133,11 @@
         <DCCReference Include="DataCreate.pas"/>
         <DCCReference Include="show.pas"/>
         <DCCReference Include="funcCompareAndtoString.pas"/>
+        <DCCReference Include="AddEdit.pas">
+            <Form>FrmAddEditElement</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="Actions.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>

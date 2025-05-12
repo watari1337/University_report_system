@@ -8,7 +8,9 @@ uses
   Pattern in 'Pattern.pas',
   DataCreate in 'DataCreate.pas',
   show in 'show.pas',
-  funcCompareAndtoString in 'funcCompareAndtoString.pas';
+  funcCompareAndtoString in 'funcCompareAndtoString.pas',
+  AddEdit in 'AddEdit.pas' {FrmAddEditElement},
+  Actions in 'Actions.pas';
 
 {$R *.res}
 
@@ -16,5 +18,6 @@ begin
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
   Application.CreateForm(TMainForm, MainForm);
+  Application.CreateForm(TFrmAddEditElement, FrmAddEditElement);
   Application.Run;
 end.
