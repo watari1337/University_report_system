@@ -5,6 +5,7 @@ object MainForm: TMainForm
   ClientHeight = 590
   ClientWidth = 1010
   Color = clBtnFace
+  DoubleBuffered = True
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -12
@@ -17,7 +18,7 @@ object MainForm: TMainForm
     Top = 0
     Width = 1010
     Height = 590
-    ActivePage = ChangeDataBase
+    ActivePage = PageMenu
     Align = alClient
     TabOrder = 0
     ExplicitWidth = 1008
@@ -22239,10 +22240,11 @@ object MainForm: TMainForm
         Top = 208
         Width = 81
         Height = 73
-        Caption = 'Test'
+        Caption = 'gener file'
+        Enabled = False
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
-        Font.Height = -40
+        Font.Height = -16
         Font.Name = 'Segoe UI'
         Font.Style = []
         ParentFont = False
@@ -22267,6 +22269,7 @@ object MainForm: TMainForm
         Anchors = []
         Caption = #1080#1079#1084#1077#1085#1077#1085#1080#1077' '#1096#1072#1073#1083#1086#1085#1086#1074
         TabOrder = 2
+        OnClick = changePatternClick
       end
       object createFile: TButton
         Left = 712
@@ -22298,6 +22301,22 @@ object MainForm: TMainForm
         Font.Style = []
         ParentFont = False
         TabOrder = 4
+        OnClick = ExitClick
+      end
+      object ExitSave: TButton
+        Left = 712
+        Top = 432
+        Width = 209
+        Height = 49
+        Anchors = []
+        Caption = 'Save and Exit'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -27
+        Font.Name = 'Segoe UI'
+        Font.Style = []
+        ParentFont = False
+        TabOrder = 5
         OnClick = ExitClick
       end
     end
@@ -22437,9 +22456,11 @@ object MainForm: TMainForm
           Height = 578
           Align = alClient
           Columns = <>
+          OwnerData = True
           RowSelect = True
           TabOrder = 0
           ViewStyle = vsReport
+          OnData = LVShowDataData
         end
       end
     end
@@ -22572,5 +22593,12 @@ object MainForm: TMainForm
       Category = 'data'
       Caption = #1048#1079#1084#1077#1085#1080#1090#1100
     end
+  end
+  object ODPattern: TOpenDialog
+    DefaultExt = 'txt'
+    Filter = 'Text files (*.txt)|*.txt'
+    Options = [ofFileMustExist, ofEnableSizing]
+    Left = 612
+    Top = 518
   end
 end

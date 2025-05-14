@@ -7,24 +7,14 @@ type
     class procedure ActDeleteData(Sender: TObject);
     class procedure ActAddData(Senser: TObject);
     class procedure ActEditData(Sender: TObject);
-//    class procedure Confirm(Sender: TObject);
-//    class procedure Cancel(Sender: TObject);
   end;
 
 implementation
 
 uses mainCodeForm, Vcl.Dialogs, DataBase, system.SysUtils, AddEdit,
-     Vcl.StdCtrls, Vcl.Samples.Spin, Controls;
+     Vcl.StdCtrls, Vcl.Samples.Spin, Controls, WorkWithData;
 
 class procedure MyActions.ActDeleteData(Sender: TObject);
-{var
-  nowTeacher: TTeacher;
-  nowLearntSubject: TLearntSubject;
-  nowStudent: TStudent;
-  nowGroup: TGroup;
-  nowSpecialty: TSpecialty;
-  nowLearntForm: TLearntForm;
-  nowFaculty: TFaculty;}
 begin
   if (MainForm.PageControl1.ActivePageIndex = 3) and
   (assigned(MainForm.LVShowData.Selected)) then begin
@@ -125,36 +115,16 @@ end;
 
 procedure GenerCodeHint(var controlCode: Iarr; var hint: SArr);
 begin
-  case workObjNow of
-    Teacher: begin
-      controlCode:= [1, 2]; //1 numberInput, 2 stringInput
-      hint:= objTTeacher.makeTitle;
-    end;
-    LearntSubject: begin
-      controlCode:= [1, 2];
-      hint:= objTLearntSubject.makeTitle;
-    end;
-    Student: begin
-      controlCode:= [1, 1, 2];
-      hint:= objTStudent.makeTitle;
-    end;
-    Group: begin
-      controlCode:= [1, 1];
-      hint:= objTGroup.makeTitle;
-    end;
-    Specialty: begin
-      controlCode:= [1, 1, 2];
-      hint:= objTSpecialty.makeTitle;
-    end;
-    LearntForm: begin
-      controlCode:= [1, 2];
-      hint:= objTLearntForm.makeTitle;
-    end;
-    Faculty: begin
-      controlCode:= [1, 2, 2];
-      objTFaculty.makeTitle;
-    end;
+  case workObjNow of  //1 numberInput, 2 stringInput
+    Teacher: controlCode:= [1, 2, 2];
+    LearntSubject: controlCode:= [1, 2];
+    Student: controlCode:= [1, 1, 1, 2];
+    Group: controlCode:= [1, 1, 1];
+    Specialty: controlCode:= [1, 1, 2];
+    LearntForm: controlCode:= [1, 2];
+    Faculty: controlCode:= [1, 2, 2];
   end;
+  hint:= makeTitle(workObjNow);
 end;
 
 function FromFrameToVarArr(): varArr;
@@ -162,6 +132,7 @@ var
   control: TControl;
 begin
   with FrmAddEditElement.PnEdit do begin
+    setLength(result, ControlCount);
     for var i:= 0 to ControlCount-1 do begin
       control:= Controls[i];
       if (control is TEdit) then
@@ -177,15 +148,16 @@ var
   controlCode: Iarr;
   hint: SArr;
   firstText: VarArr;
+  modalAns: TModalresult;
 begin
-  if (MainForm.PageControl1.ActivePageIndex = 3) and
-  (assigned(MainForm.LVShowData.Selected)) then begin
-    GenerCodeHint(controlCode, hint);
-    setLength(firstText, MainForm.LVShowData.Columns.Count);
-    createAskForm(controlCode, hint, firstText);
+  GenerCodeHint(controlCode, hint);
+  setLength(firstText, MainForm.LVShowData.Columns.Count);
+  createAskForm(controlCode, hint, firstText);
 
-    FrmAddEditElement.ShowModal;
-  end;
+  modalAns:= FrmAddEditElement.ShowModal;
+  if (modalAns = mrOk) then begin
+    PushListT(FromFrameToVarArr());
+  end
 end;
 
 class procedure MyActions.ActEditData(Sender: TObject);
@@ -194,6 +166,7 @@ var
   hint: SArr;
   firstText: VarArr;
   index: integer;
+  modalAns: TModalresult;
 begin
   if (MainForm.PageControl1.ActivePageIndex = 3) and
   (assigned(MainForm.LVShowData.Selected)) then begin
@@ -212,8 +185,21 @@ begin
     end;
     createAskForm(controlCode, hint, firstText);
 
-    FrmAddEditElement.ShowModal;
+    modalAns:= FrmAddEditElement.ShowModal;
+    if (modalAns = mrOk) then begin
+      index:= strToint(MainForm.LVShowData.Selected.caption);
+      case workObjNow of
+        Teacher: objTTeacher.ChangeT(index, FromFrameToVarArr());
+        LearntSubject: objTLearntSubject.ChangeT(index, FromFrameToVarArr());
+        Student: objTStudent.ChangeT(index, FromFrameToVarArr());
+        Group: objTGroup.ChangeT(index, FromFrameToVarArr());
+        Specialty: objTSpecialty.ChangeT(index, FromFrameToVarArr());
+        LearntForm: objTLearntForm.ChangeT(index, FromFrameToVarArr());
+        Faculty: objTFaculty.ChangeT(index, FromFrameToVarArr());
+      end;
+    end
   end;
 end;
 
 end.
+

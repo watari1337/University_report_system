@@ -6,9 +6,9 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
   Vcl.StdCtrls, Vcl.Imaging.jpeg, Vcl.ExtCtrls,
-  DataBase, BasicFunction, Pattern, DataCreate, funcCompareAndtoString,
+  DataBase, BasicFunction, Pattern, DataCreate,
   Vcl.ComCtrls, System.Actions,
-  Vcl.ActnList, Vcl.Buttons, Vcl.Samples.Spin;
+  Vcl.ActnList, Vcl.Buttons, Vcl.Samples.Spin, ULoadData;
 
 type
   TMainForm = class(TForm)
@@ -48,6 +48,8 @@ type
     deleteData: TAction;
     AddData: TAction;
     editData: TAction;
+    ExitSave: TButton;
+    ODPattern: TOpenDialog;
     procedure ReadyButtonClick(Sender: TObject);
     procedure TestClick(Sender: TObject);
     procedure ExitClick(Sender: TObject);
@@ -57,6 +59,8 @@ type
     procedure PatternButtonAction(sender: TObject);
     procedure ChooseDataClick(Sender: TObject);
     procedure ChangeDataClick(Sender: TObject);
+    procedure LVShowDataData(Sender: TObject; Item: TListItem);
+    procedure changePatternClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -86,6 +90,23 @@ procedure ClearScrolBox(myBox: TScrollBox);
 begin
   for var i:= 0 to myBox.ControlCount-1 do begin
     myBox.Controls[0].Free;
+  end;
+end;
+
+procedure TMainForm.changePatternClick(Sender: TObject);
+var
+  sourc, dest: string;
+begin
+  if ODPattern.Execute() then begin
+    sourc:= ODPattern.FileName;
+    dest:= ExtractFilePath(ParamStr(0));
+    dest:= dest + 'Pattern\' + ExtractFileName(sourc);
+    //false перезаписать если такой файл уже есть true не перезаписывать 
+    if CopyFile(PChar(sourc), PChar(dest), true) then begin
+      showMessage('Файл успешно скопирован!');
+      reLoadPattern();
+    end
+    else showMessage(SysErrorMessage(GetLastError));
   end;
 end;
 
@@ -134,6 +155,25 @@ begin
   if (Sender as TButton).Tag = 2 then ClearScrolBox(ScrollBoxPattern);
 end;
 
+procedure TMainForm.LVShowDataData(Sender: TObject; Item: TListItem);
+var
+  element: VarArr;
+begin
+  case workObjNow of
+    TAllType(1): element:= objTTeacher.ReadT( objTTeacher.GetByIndex(item.Index));
+    TAllType(0): element:= objTLearntSubject.ReadT( objTLearntSubject.GetByIndex(item.Index));
+    TAllType(2): element:= objTStudent.ReadT( objTStudent.GetByIndex(item.Index));
+    TAllType(3): element:= objTGroup.ReadT( objTGroup.GetByIndex(item.Index));
+    TAllType(4): element:= objTSpecialty.ReadT( objTSpecialty.GetByIndex(item.Index));
+    TAllType(6): element:= objTLearntForm.ReadT( objTLearntForm.GetByIndex(item.Index));
+    TAllType(5): element:= objTFaculty.ReadT( objTFaculty.GetByIndex(item.Index));
+  end;
+  item.Caption:= element[0];
+  for var i := 1 to High(element) do begin
+    item.SubItems.Add(element[i]);
+  end;
+end;
+
 procedure TMainForm.PatternButtonAction(sender: TObject);
 var
   findWords: SArr;
@@ -146,8 +186,12 @@ end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
+  if (DirectoryExists('Data\') = false) then CreateDir('Data\');
+  if (DirectoryExists('Pattern\') = false) then CreateDir('Pattern\');
+  
+
   PageControl1.ActivePageIndex:= 0;
-  loadData();
+  loadDataFile();
 
   //connect actions from another unit
   deleteData.OnExecute:= Actions.MyActions.ActDeleteData;

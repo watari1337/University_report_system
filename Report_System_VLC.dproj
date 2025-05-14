@@ -138,6 +138,9 @@
             <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="Actions.pas"/>
+        <DCCReference Include="WorkWithData.pas"/>
+        <DCCReference Include="ULoadData.pas"/>
+        <DCCReference Include="SaveData.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>

@@ -10,7 +10,10 @@ uses
   show in 'show.pas',
   funcCompareAndtoString in 'funcCompareAndtoString.pas',
   AddEdit in 'AddEdit.pas' {FrmAddEditElement},
-  Actions in 'Actions.pas';
+  Actions in 'Actions.pas',
+  WorkWithData in 'WorkWithData.pas',
+  ULoadData in 'ULoadData.pas',
+  SaveData in 'SaveData.pas';
 
 {$R *.res}
 
