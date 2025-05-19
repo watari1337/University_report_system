@@ -7,12 +7,13 @@ type
     class procedure ActDeleteData(Sender: TObject);
     class procedure ActAddData(Senser: TObject);
     class procedure ActEditData(Sender: TObject);
+    class procedure ActShowExtraData(Sender: TObject);
   end;
 
 implementation
 
 uses mainCodeForm, Vcl.Dialogs, DataBase, system.SysUtils, AddEdit,
-     Vcl.StdCtrls, Vcl.Samples.Spin, Controls, WorkWithData;
+     Vcl.StdCtrls, Vcl.Samples.Spin, Controls, WorkWithData, Vcl.ComCtrls;
 
 class procedure MyActions.ActDeleteData(Sender: TObject);
 begin
@@ -198,6 +199,32 @@ begin
         Faculty: objTFaculty.ChangeT(index, FromFrameToVarArr());
       end;
     end
+  end;
+end;
+
+class procedure MyActions.ActShowExtraData(Sender: TObject);
+var
+  titles: Sarr;
+  widths: IArr;
+  col: TListColumn;
+begin
+  if (MainForm.PageControl1.ActivePageIndex = 3) and
+  (assigned(MainForm.LVShowData.Selected)) then begin
+    with MainForm.LVShowData do begin
+      Tag:= strtoInt(items[ItemIndex].Caption);
+      Items.Count:= objTGroup.ReadT( objTGroup.Find(tag))[2];
+      
+      titles:= ['id', 'id предмета','id учителя','часов', 'credits'];
+      widths:= [90, 90, 90, 90, 90];
+      Columns.Clear;
+      for var i:= 0 to length(titles)-1 do begin
+        col:= Columns.Add;
+        col.Caption:= titles[i];
+        col.Width:= widths[i];
+      end;
+      col.Width:= -2;
+      Invalidate;
+    end;
   end;
 end;
 

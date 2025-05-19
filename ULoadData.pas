@@ -42,7 +42,7 @@ begin
   objTTeacher:= BaseClass<TTeacher>.Create(Teacher);
   while (not EOF(myFile)) do begin
     Read(myFile, temp);
-    objTTeacher.pushList(temp);
+    objTTeacher.pushEnd(temp);
   end;
   CloseFile(myFile);
 end;
@@ -57,7 +57,7 @@ begin
   objTLearntSubject:= BaseClass<TLearntSubject>.Create(LearntSubject);
   while (not EOF(myFile)) do begin
     Read(myFile, temp);
-    objTLearntSubject.pushList(temp);
+    objTLearntSubject.pushEnd(temp);
   end;
   CloseFile(myFile);
 end;
@@ -72,7 +72,7 @@ begin
   objTStudent:=  BaseClass<TStudent>.Create(Student);
   while (not EOF(myFile)) do begin
     Read(myFile, temp);
-    objTStudent.pushList(temp);
+    objTStudent.pushEnd(temp);
   end;
   CloseFile(myFile);
 end;
@@ -87,7 +87,7 @@ begin
   objTGroup:=  BaseClass<TGroup>.Create(Group);
   while (not EOF(myFile)) do begin
     Read(myFile, temp);
-    objTGroup.pushList(temp);
+    objTGroup.pushEnd(temp);
   end;
   CloseFile(myFile);
 end;
@@ -102,7 +102,7 @@ begin
   objTSpecialty:=  BaseClass<TSpecialty>.Create(Specialty);
   while (not EOF(myFile)) do begin
     Read(myFile, temp);
-    objTSpecialty.pushList(temp);
+    objTSpecialty.pushEnd(temp);
   end;
   CloseFile(myFile);
 end;
@@ -117,7 +117,7 @@ begin
   objTLearntForm:=  BaseClass<TLearntForm>.Create(LearntForm);
   while (not EOF(myFile)) do begin
     Read(myFile, temp);
-    objTLearntForm.pushList(temp);
+    objTLearntForm.pushEnd(temp);
   end;
   CloseFile(myFile);
 end;
@@ -132,7 +132,7 @@ begin
   objTFaculty:=  BaseClass<TFaculty>.Create(Faculty);
   while (not EOF(myFile)) do begin
     Read(myFile, temp);
-    objTFaculty.pushList(temp);
+    objTFaculty.pushEnd(temp);
   end;
   CloseFile(myFile);
 end;
@@ -155,3 +155,4 @@ begin
 end;
 
 end.
+

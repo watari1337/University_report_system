@@ -6,8 +6,69 @@ uses DataBase;
 
 function makeTitle(listType: TAllType): Sarr;
 procedure PushListT(element: VarArr);
+function findGroupByName(realName: string): integer;
+function GetArrDataFromGroup(id: integer): TArrSbjTch;
+function takeFromArrGroup(num, id, collum, group: integer): integer;
 
 implementation
+
+function GetArrDataFromGroup(id: integer): TArrSbjTch;
+var
+  node: BaseClass<TGroup>.AdrNode;
+begin
+  node:= objTGroup.headList^.Next;
+  while (node <> nil) do begin
+    if (id = node^.inf.id) then begin   //0 номер группы
+      result:= node^.inf.arrSbj;
+      break;
+    end;
+    node:= node^.Next;
+  end;
+end;
+
+{num колонка из которой взять результат, id строчка которая нам нужна,
+id это элемент колонки collums, group группа с которой работаем}
+function takeFromArrGroup(num, id, collum, group: integer): integer;
+var
+  arr: TArrSbjTch;
+  i: integer;
+  notStop: boolean;
+begin
+  result:= -1;
+  arr:= GetArrDataFromGroup(group);
+  i:= Low(arr);
+  notStop:= true;
+  while (i < High(arr)) and (notStop) do begin
+    case collum of
+      1: if (arr[i].sbj = id) then notStop:= false;
+      2: if (arr[i].teacher = id) then notStop:= false;
+    end;
+    inc(i);
+  end;
+  case num of
+    0: result:= arr[i].id;
+    1: result:= arr[i].sbj;
+    2: result:= arr[i].teacher;
+    {3: result:= arr[i].typeSbj;}
+    3: result:= arr[i].hour;
+    4: result:= arr[i].credits;
+  end;
+end;
+
+function findGroupByName(realName: string): integer;
+var
+  node: BaseClass<TStudent>.AdrNode;
+begin
+  node:= objTStudent.headList^.Next;
+  result:= -1;
+  while (node <> nil) do begin
+    if (realName = node^.inf.name) then begin   //3 имя
+      result:= node^.inf.group;
+      break;
+    end;
+    node:= node^.Next;
+  end;
+end;
 
 function makeTitle(listType: TAllType): Sarr;
 begin

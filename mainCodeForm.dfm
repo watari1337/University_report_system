@@ -22241,7 +22241,6 @@ object MainForm: TMainForm
         Width = 81
         Height = 73
         Caption = 'gener file'
-        Enabled = False
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -16
@@ -22252,32 +22251,36 @@ object MainForm: TMainForm
         OnClick = TestClick
       end
       object ChangeData: TButton
-        Left = 712
-        Top = 266
+        Left = 716
+        Top = 241
         Width = 209
         Height = 49
         Anchors = []
-        Caption = #1048#1079#1084#1077#1085#1077#1085#1080#1077' '#1041#1072#1079#1099' '#1076#1072#1085#1085#1099#1093
+        Caption = #1041#1072#1079#1072' '#1076#1072#1085#1085#1099#1093
         TabOrder = 1
         OnClick = ChangeDataClick
+        ExplicitLeft = 714
+        ExplicitTop = 237
       end
       object changePattern: TButton
-        Left = 712
-        Top = 179
+        Left = 716
+        Top = 152
         Width = 209
         Height = 49
         Anchors = []
         Caption = #1080#1079#1084#1077#1085#1077#1085#1080#1077' '#1096#1072#1073#1083#1086#1085#1086#1074
         TabOrder = 2
         OnClick = changePatternClick
+        ExplicitLeft = 714
+        ExplicitTop = 150
       end
       object createFile: TButton
-        Left = 712
-        Top = 105
+        Left = 716
+        Top = 70
         Width = 209
         Height = 49
         Anchors = []
-        Caption = #1057#1086#1079#1076#1072#1085#1080#1077' '#1092#1072#1081#1083#1072' '#13#10#1087#1086' '#1096#1072#1073#1083#1086#1085#1091
+        Caption = #1057#1086#1079#1076#1072#1085#1080#1077' '#1092#1072#1081#1083#1072' '
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -19
@@ -22286,14 +22289,16 @@ object MainForm: TMainForm
         ParentFont = False
         TabOrder = 3
         OnClick = createFileClick
+        ExplicitLeft = 714
+        ExplicitTop = 69
       end
-      object Exit: TButton
-        Left = 712
-        Top = 352
+      object btnExit: TButton
+        Left = 716
+        Top = 321
         Width = 209
         Height = 49
         Anchors = []
-        Caption = 'Exit'
+        Caption = #1042#1099#1093#1086#1076
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -27
@@ -22301,11 +22306,14 @@ object MainForm: TMainForm
         Font.Style = []
         ParentFont = False
         TabOrder = 4
-        OnClick = ExitClick
+        OnClick = btnExitClick
+        ExplicitLeft = 714
+        ExplicitTop = 316
       end
       object ExitSave: TButton
-        Left = 712
-        Top = 432
+        Tag = 1
+        Left = 716
+        Top = 399
         Width = 209
         Height = 49
         Anchors = []
@@ -22317,7 +22325,9 @@ object MainForm: TMainForm
         Font.Style = []
         ParentFont = False
         TabOrder = 5
-        OnClick = ExitClick
+        OnClick = btnExitClick
+        ExplicitLeft = 714
+        ExplicitTop = 393
       end
     end
     object PageCreateByPattern: TTabSheet
@@ -22378,8 +22388,6 @@ object MainForm: TMainForm
         Color = clCream
         ParentBackground = False
         TabOrder = 0
-        ExplicitLeft = 815
-        ExplicitHeight = 572
         object Menu: TButton
           Tag = 1
           Left = 1
@@ -22398,8 +22406,8 @@ object MainForm: TMainForm
           OnClick = GoBackMenuClick
         end
         object BtnDelete: TButton
-          Left = 1
-          Top = 71
+          Left = 0
+          Top = 141
           Width = 183
           Height = 49
           Action = deleteData
@@ -22413,7 +22421,7 @@ object MainForm: TMainForm
         end
         object BtnAddElement: TButton
           Left = 0
-          Top = 142
+          Top = 70
           Width = 185
           Height = 49
           Action = AddData
@@ -22426,7 +22434,7 @@ object MainForm: TMainForm
           TabOrder = 2
         end
         object BtnEditElement: TButton
-          Left = 0
+          Left = -1
           Top = 214
           Width = 185
           Height = 49
@@ -22439,6 +22447,20 @@ object MainForm: TMainForm
           ParentFont = False
           TabOrder = 3
         end
+        object MoreData: TButton
+          Left = -1
+          Top = 285
+          Width = 185
+          Height = 49
+          Action = actShowExtraInfo
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -21
+          Font.Name = 'Segoe UI'
+          Font.Style = []
+          ParentFont = False
+          TabOrder = 4
+        end
       end
       object PanelAllPage: TPanel
         Left = 0
@@ -22447,8 +22469,6 @@ object MainForm: TMainForm
         Height = 580
         Align = alClient
         TabOrder = 1
-        ExplicitWidth = 815
-        ExplicitHeight = 572
         object LVShowData: TListView
           Left = 1
           Top = 1
@@ -22458,6 +22478,7 @@ object MainForm: TMainForm
           Columns = <>
           OwnerData = True
           RowSelect = True
+          SortType = stText
           TabOrder = 0
           ViewStyle = vsReport
           OnData = LVShowDataData
@@ -22578,6 +22599,7 @@ object MainForm: TMainForm
     end
   end
   object ActionList1: TActionList
+    OnUpdate = ActionList1Update
     Left = 684
     Top = 518
     object deleteData: TAction
@@ -22592,6 +22614,10 @@ object MainForm: TMainForm
     object editData: TAction
       Category = 'data'
       Caption = #1048#1079#1084#1077#1085#1080#1090#1100
+    end
+    object actShowExtraInfo: TAction
+      Category = 'data'
+      Caption = #1076#1086#1087' '#1080#1085#1092#1086
     end
   end
   object ODPattern: TOpenDialog

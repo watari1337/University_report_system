@@ -222,6 +222,7 @@ end;
 
 const
   idGroup: array[0..6] of integer = (451001, 451002, 351001, 251001, 463131, 410971, 465941);
+  hours: array[0..8] of integer = (30, 68, 72, 102, 108, 100, 112, 120, 210);
 
 Procedure createFileTGroup();
 var
@@ -236,9 +237,12 @@ begin
     tempG.numStudent:= 0;
     tempG.numSBJ:= Random(5)+10;
     for var k:= 0 to tempG.numSBJ-1 do begin
+      tempSt.id:= k;
       tempSt.sbj:= Random(maxSBJ);
       tempSt.teacher:= Random(maxTeacher);
-      tempSt.typeSbj:= Random(3);
+      //tempSt.typeSbj:= Random(3);
+      tempSt.hour:= hours[Random(9)];
+      tempSt.credits:= Random(5)+1;
 
       tempG.arrSBJ[k]:= tempST;
     end;

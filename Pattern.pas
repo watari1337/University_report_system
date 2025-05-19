@@ -8,27 +8,42 @@ type
       text: string;
     End;
 
-    SArr = array of Pair;
+    str2 = Record
+      fileWord: string;
+      userWord: string;
+    End;
 
-procedure CreateObjectPattern();
-function ListOfWords(fileName: string): SArr;
-procedure CreateAskTexBox(arr: SArr);
+    SPArr = array of Pair;
+    StrArr = array of string;
+    InputArr = array of str2;
+
+var
+  findWords: SPArr;  //words from pattern
+  getWords: InputArr; //user input words
+  groupId: integer;
+  fileNameNow: string;
+
+function ListOfWords(fileName: string): SPArr;
 function checkEdit(): boolean;
+function ReadAnswer: InputArr;
+procedure MakeWords(var Words: SPArr; userWords: InputArr);
+procedure FindGroup();
 
 implementation
 
 uses System.SysUtils, BasicFunction, mainCodeForm,
-     Vcl.StdCtrls, Vcl.ExtCtrls, DataBase, Vcl.Buttons, Vcl.Graphics;
-
-
-//по файлу создаёт возвращает массив из всех нужных слов в долларах, в виде
-//записи где есть сама строка и новер символа где это слово в строке
-function ListOfWords(fileName: string): SArr;
+     Vcl.StdCtrls, Vcl.ExtCtrls, DataBase, Vcl.Buttons, Vcl.Graphics,
+     WorkWithData, DateUtils;
+     
 const
-  goodWords: array[0..18] of string = ('фио','деканд','допфио','группафио',
+  goodWords: array[0..20] of string = ('фио','деканд','допфио','группафио',
   'группа','семестр','факульт','спец','спецфакультета','предмет','пфио',
   'дата','моядата','формаобучения','пересдач','телефон','печать',
-  'местопредъявления','видзанятий');
+  'местопредъявления','видзанятий', 'курс', 'год');
+     
+//по файлу создаёт возвращает массив из всех нужных слов в долларах, в виде
+//записи где есть сама строка и новер символа где это слово в строке
+function ListOfWords(fileName: string): SPArr;
 var
   startPos, endPos, wordNow, i, maxIndex: integer;
   findDollar, find2Dollar, isGoodWord, stop: boolean;
@@ -68,7 +83,7 @@ begin
         end;
         if (isGoodWord) then begin
           if (wordNow >= length(result)) then setLength(result, length(result)*2);
-          result[wordNow].index:= startPos + maxIndex;
+          result[wordNow].index:= startPos + maxIndex; //
           result[wordNow].text:= word;
           inc(wordNow);
         end;
@@ -93,83 +108,55 @@ begin
 
 end;
 
-procedure CreateObjectPattern();
-const
-  basicColorPanel: TColor = clCream;
+procedure FindGroup();
 var
-  btn: TButton;
-  lbl: TLabel;
-  i, width: integer;
+  groupFind: boolean;
+  index: integer;
 begin
-
-  lbl:= TLabel.Create(MainForm.ScrollBoxPattern);
-  lbl.Parent:= MainForm.ScrollBoxPattern;
-  lbl.Caption:= 'Выберите 1 из сохранённых шаблонов:';
-  lbl.Font.Size:= 14;
-  lbl.Left:= Round((MainForm.ScrollBoxPattern.ClientWidth - lbl.Canvas.TextWidth(lbl.Caption)) / 2) ;
-  lbl.Top:= 10;
-  lbl.Height:= 40;
-
-  i:= 0;
-  width:= MainForm.ScrollBoxPattern.ClientWidth - 40;
-  while (arrPattern[i] <> '') do
-  begin
-    Btn:= TButton.Create(MainForm.ScrollBoxPattern);
-    Btn.Parent:= MainForm.ScrollBoxPattern;
-    Btn.Left:= 20;
-    Btn.Top:= I * 45 + 60;
-    Btn.Width:= width;
-    Btn.Height:= 40;
-    Btn.Caption:= arrPattern[i];
-    Btn.OnClick:= MainForm.PatternButtonAction;
-    inc(i);
+  groupFind:= false;
+  for var i := Low(getWords) to High(getWords) do begin
+    if (getWords[i].fileWord = 'группа') then begin
+      groupFind:= true;
+      groupId:= strToInt(getWords[i].userWord);
+    end;
+  end;
+  if (groupFind = false) then begin     //если нет группы тогда точно есть фио
+    index:= 0;
+    while (index < length(getWords)) and (getWords[index].fileWord <> 'фио') do inc(index);
+    if (index < length(getWords)) then groupId:= findGroupByName(getWords[index].userWord);
+    //если среди запрашиваемых есть группа надо добавить
+    index:= 0;
+    while (index < length(findWords)) and (findWords[index].text <> 'группа') do inc(index);
+    if (index < length(getWords)) then findWords[index].text:= intToStr(groupId);
   end;
 end;
 
-procedure CreateAskTexBox(arr: SArr);
-const
-  goodWords: array[0..8] of string = ('фио','допфио','предмет','моядата',
-  'пересдач','телефон','печать', 'местопредъявления','видзанятий');
+function ReadAnswer: InputArr;
 var
   myEdit: TEdit;
-  btn: TButton;
-  panel: TPanel;
-  top, width: integer;
+  index: integer;
 begin
-  Btn:= TButton.Create(MainForm.ScrollBoxPattern);
-  Btn.Parent:= MainForm.ScrollBoxPattern;
-  Btn.Left:= MainForm.ScrollBoxPattern.ClientWidth - 220;
-  Btn.Top:= 10;
-  Btn.Width:= 200;
-  Btn.Height:= 40;
-  btn.Caption:= 'готово';
-  btn.OnClick:= MainForm.ReadyButtonClick;
-
-  {panel:= TPanel.Create(MainForm.ScrollBoxPattern);
-  panel.parent:= MainForm.ScrollBoxPattern;
-  panel.Caption:= 'готово';
-  panel.Color:= clGreen;
-  panel.Left:= MainForm.ScrollBoxPattern.ClientWidth - 220;
-  panel.Top:= 10;
-  panel.Width:= 200;
-  panel.Height:= 40;}
-
-  top:= 65;
-  width:= MainForm.ScrollBoxPattern.ClientWidth - 40;
-  for var i:= Low(arr) to High(arr) do begin
-    for var j:= Low(goodWords) to High(goodWords) do begin
-      if (arr[i].text = goodWords[j]) then begin
-        myEdit:= TEdit.Create(MainForm.ScrollBoxPattern);
-        myEdit.Parent:= MainForm.ScrollBoxPattern;
-        myEdit.Left:= 20;
-        myEdit.Top:= top;
-        myEdit.Width:= width;
-        myEdit.Height:= 40;
-        myEdit.TextHint:= 'Введите ' + arr[i].text;
-        inc(top, 45);
-      end;
+  setLength(result, MainForm.ScrollBoxPattern.ControlCount);
+  index:= 0;
+  for var i:= 0 to MainForm.ScrollBoxPattern.ControlCount - 1 do begin
+    if (MainForm.ScrollBoxPattern.Controls[i] is TEdit) then begin
+      myEdit:= (MainForm.ScrollBoxPattern.Controls[i] as TEdit);
+      result[index].fileWord:= myEdit.Name;
+      result[index].userWord:= myEdit.Text;
+      inc(index);
     end;
   end;
+  setLength(result, index);
+end;
+
+function checkInputWord(Edit: TEdit): boolean;
+begin
+  result:= false;
+  {'фио','допфио','предмет','моядата',
+  'пересдач','телефон','печать', 'местопредъявления','видзанятий'}
+  if (edit.Name = 'фио') and (findGroupByName(edit.Text) <> -1) then result:= true
+  else if (edit.Name = 'допфио') or (edit.Name = 'телефон') then result:= true
+  else if (edit.Name = 'допфио') then result:= true     
 end;
 
 function checkEdit(): boolean;
@@ -180,14 +167,104 @@ begin
   for var i:= 0 to MainForm.ScrollBoxPattern.ControlCount - 1 do begin
     if (MainForm.ScrollBoxPattern.Controls[i] is TEdit) then begin
       myEdit:= (MainForm.ScrollBoxPattern.Controls[i] as TEdit);
-      if (myEdit.Text = '') then begin //and (myEdit.tag <> 0)
+      if (checkInputWord(myEdit)) then begin //and (myEdit.tag <> 0)
+        myEdit.Color:= clWebMediumSpringGreen;
+      end
+      else begin
         myEdit.Color:= $005858FF;
         result:= false;
-      end
-      else myEdit.Color:= clWebMediumSpringGreen;
+      end;
     end;
   end;
 end;
 
+//в группе много чего зашифрованно указав число получим нужное число из группы
+function GetIdFromGroup(value, group: integer): integer;
+begin 
+  case value of
+    0: result:= group div 100000;   //год поступления
+    1: result:= group div 10000 mod 10; //facult
+    2: result:= group div 100 mod 100; //spesiality
+    3: result:= group div 10 mod 10;  //learnt form
+    4: result:= group mod 10;  //group number
+  end;
+end;
+
+function GetElementUserWords(id: string; words: InputArr): string;
+var
+  i: integer;
+begin
+  result:= '';
+  I := Low(words);
+  while i <= High(words) do begin
+    if (words[i].fileWord = id) then begin 
+      result:= words[i].userWord;
+      break;
+    end;
+    inc(i);
+  end;                                                         
+end;
+
+procedure MakeWords(var Words: SPArr; userWords: InputArr);
+var
+  find: boolean;
+  j, num, num1: integer;
+  str: string;
+begin
+  for var i := Low(words) to High(words) do begin
+    //check words from input
+    str:= GetElementUserWords(words[i].text, userWords);
+    if (str <> '') then begin
+      words[i].text:= str;
+    end
+    else begin
+      //group
+      if words[i].text = 'факульт' then 
+        str:= objTFaculty.Read1(GetIdFromGroup(1, groupId), 1)
+      else if words[i].text = 'спец' then
+        str:= objTSpecialty.Read1(GetIdFromGroup(2, groupId), 2)
+      else if words[i].text = 'деканд' then
+        str:= objTFaculty.Read1(GetIdFromGroup(1, groupId), 2)
+      else if words[i].text = 'формаобучения' then
+        str:= objTLearntForm.Read1(GetIdFromGroup(3, groupId), 1)
+      //подсчёт зная группу
+      else if words[i].text = 'курс' then begin
+        num:= yearOf(Date()) mod 10;
+        num1:= GetIdFromGroup(0, groupId);
+        if (num >= num1) and (monthOf(Date) >= 7) then str:= intToStr(num - num1+1)
+        else if (num >= num1) and (monthOf(Date) < 7) then str:= intToStr(num - num1)
+        else if (num < num1) and (monthOf(Date) >= 7) then str:= intToStr(num + 10 - num1+1)
+        else if (num < num1) and (monthOf(Date) < 7) then str:= intToStr(num + 10 - num1)
+      end        
+      else if words[i].text = 'семестр' then begin
+        num:= yearOf(Date()) mod 10;
+        num1:= GetIdFromGroup(0, groupId);
+        if (num >= num1) and (monthOf(Date) >= 7) then str:= intToStr((num - num1+1)*2-1)
+        else if (num >= num1) and (monthOf(Date) < 7) then str:= intToStr((num - num1)*2)
+        else if (num < num1) and (monthOf(Date) >= 7) then str:= intToStr((num + 10 - num1+1)*2-1)
+        else if (num < num1) and (monthOf(Date) < 7) then str:= intToStr((num + 10 - num1)*2-1)
+      end        
+      //data
+      else if words[i].text = 'дата' then str:= DateTostr(Date())
+      else if words[i].text = 'год' then str:= intToStr(yearOf(Date()))
+      //массив группы                                       //ищем предмет тогда знаем пфио
+      else if words[i].text = 'пфио' then begin //ищем пфио тогда знаем предмет
+        num:= objTLearntSubject.FindAny( GetElementUserWords('предмет', userWords), 1, 0);
+        num:= takeFromArrGroup(2, num, 1, groupId);
+        str:= objTTeacher.Read1(num, 1);
+        str:= str + ' ' + objTTeacher.Read1(num, 2);
+      end
+      else if words[i].text = 'предмет' then begin
+        num:= objTTeacher.FindAny( GetElementUserWords('пфио', userWords), 2, 0);
+        num:= takeFromArrGroup(1, num, 2, groupId);
+        str:= objTLearntSubject.Read1(num, 1);
+      end;
+      
+      words[i].text:= str;
+    end;
+    
+         
+  end;
+end;
 
 end.

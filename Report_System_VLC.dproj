@@ -131,8 +131,6 @@
         <DCCReference Include="BasicFunction.pas"/>
         <DCCReference Include="Pattern.pas"/>
         <DCCReference Include="DataCreate.pas"/>
-        <DCCReference Include="show.pas"/>
-        <DCCReference Include="funcCompareAndtoString.pas"/>
         <DCCReference Include="AddEdit.pas">
             <Form>FrmAddEditElement</Form>
             <FormType>dfm</FormType>
@@ -141,6 +139,7 @@
         <DCCReference Include="WorkWithData.pas"/>
         <DCCReference Include="ULoadData.pas"/>
         <DCCReference Include="SaveData.pas"/>
+        <DCCReference Include="PatternShow.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>

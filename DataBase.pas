@@ -24,16 +24,20 @@ type
     End;
 
     TSbjTeacher = Record
+      id: integer;
       sbj: integer;
       teacher: integer;
-      typeSbj: integer; //лк пз лб
+      {typeSbj: integer; //лк пз лб}
+      hour: integer; //часов изучения
+      credits: integer;
     End;
+    TArrSbjTch = array[0..40] of TSbjTeacher;
 
     TGroup = Record
       id: integer; //номер группы
       numStudent: integer;
       numSBJ: integer;
-      arrSbj: array[0..40] of TSbjTeacher;
+      arrSbj: TArrSbjTch;
     End;
 
     TSpecialty = Record
@@ -62,27 +66,32 @@ type
 
     BaseClass<T> = class
       private
+
+      public
         type
           AdrNode = ^ListNode;
           ListNode = Record   //создание узла связного списка для любого указаного при создании типа T
             inf: T;
             Next: AdrNode;
           End;
-      private
+      public
         headList: AdrNode;
         listType: TallType;
+        last: adrNode;
 
-      public
         constructor Create(listTypeNow: TallType);
         destructor Destroy();
         procedure pushList(inf: T);
+        procedure pushEnd(inf: T);
         procedure deleteNode(inf: integer);
         procedure createPageShowList();
         function ReadT(from: T): VarArr;
+        function Find(id: integer): T;
+        function FindAny(element: variant; collum, num: integer): variant;
+        function Read1(id, num: integer): variant;
         procedure WriteT(from: VarArr; var writeTo: T);
         procedure ChangeT(id: integer; from: VarArr);
         function SameId(element1: T; element2ID: integer): boolean;
-        function Find(id: integer): T;
         function GetByIndex(num: integer): T;
         function Count: integer;
     end;
@@ -159,6 +168,11 @@ begin
       nowFaculty.decanName:= from[2];
     end;
   end;
+end;
+
+function BaseClass<T>.Read1(id, num: integer): variant;
+begin
+  result:= ReadT(Find(id))[num];
 end;
 
 function BaseClass<T>.ReadT(from: T): VarArr;
@@ -253,6 +267,7 @@ begin
   if (headList = nil) then begin
     new(headList);
     headList^.Next:= nil;
+    last:= headList;
   end;
 end;
 
@@ -270,17 +285,33 @@ end;
 
 function BaseClass<T>.Find(id: integer): T;
 var
-  temp: AdrNode;
+  Node: AdrNode;
   noStop: boolean;
 begin
-  temp:= headList^.Next;
+  Node:= headList^.Next;
   noStop:= true;
-  while (temp <> nil) and (noStop) do begin
-    if (SameId(temp^.inf, id)) then begin
+  while (Node <> nil) and (noStop) do begin
+    if (SameId(Node^.inf, id)) then begin
       noStop:= false;
-      result:= temp^.inf;
+      result:= Node^.inf;
     end;
-    temp:= temp^.Next;
+    Node:= Node^.Next;
+  end;
+end;
+
+function BaseClass<T>.FindAny(element: variant; collum, num: integer): variant;
+var
+  Node: AdrNode;
+  noStop: boolean;
+begin
+  Node:= headList^.Next;
+  noStop:= true;
+  while (Node <> nil) and (noStop) do begin
+    if (ReadT(Node^.inf)[collum] = element) then begin
+      noStop:= false;
+      result:= ReadT(Node^.inf)[num];
+    end;
+    Node:= Node^.Next;
   end;
 end;
 
@@ -295,6 +326,21 @@ begin
   result:= node^.inf;
 end;
 
+procedure BaseClass<T>.pushEnd(inf: T);
+var
+  Node: AdrNode;
+begin
+  if (headList <> nil) then begin
+    new(Node);
+    Node^.inf:= inf;
+    last^.Next:= Node;
+    Node^.Next:= nil;
+    last:= Node;
+  end;
+  MainForm.LVShowData.Items.Count:= MainForm.LVShowData.Items.Count+1;
+  MainForm.LVShowData.Invalidate;
+end;
+
 procedure BaseClass<T>.pushList(inf: T);
 var
   Node: AdrNode;
@@ -304,7 +350,9 @@ begin
     Node^.inf:= inf;
     Node^.Next:= headList^.Next;
     headList^.Next:= Node;
+    if (last = headList) then last:= headList^.Next;
   end;
+
   MainForm.LVShowData.Items.Count:= MainForm.LVShowData.Items.Count+1;
   MainForm.LVShowData.Invalidate;
 end;
@@ -320,6 +368,7 @@ begin
       preNode^.Next:= curNode^.Next;
       delNode:= curNode;
       curNode:= curNode^.Next;
+      if (delNode = last) then last:= preNode;
       dispose(delNode);
     end
     else begin

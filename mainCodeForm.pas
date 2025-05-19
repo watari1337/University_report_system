@@ -8,13 +8,14 @@ uses
   Vcl.StdCtrls, Vcl.Imaging.jpeg, Vcl.ExtCtrls,
   DataBase, BasicFunction, Pattern, DataCreate,
   Vcl.ComCtrls, System.Actions,
-  Vcl.ActnList, Vcl.Buttons, Vcl.Samples.Spin, ULoadData;
+  Vcl.ActnList, Vcl.Buttons, Vcl.Samples.Spin, ULoadData, SaveData, WorkWithData,
+  PatternShow;
 
 type
   TMainForm = class(TForm)
     createFile: TButton;
     ChangeData: TButton;
-    Exit: TButton;
+    btnExit: TButton;
     Test: TButton;
     changePattern: TButton;
     PageControl1: TPageControl;
@@ -50,9 +51,11 @@ type
     editData: TAction;
     ExitSave: TButton;
     ODPattern: TOpenDialog;
+    MoreData: TButton;
+    actShowExtraInfo: TAction;
     procedure ReadyButtonClick(Sender: TObject);
     procedure TestClick(Sender: TObject);
-    procedure ExitClick(Sender: TObject);
+    procedure btnExitClick(Sender: TObject);
     procedure createFileClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure GoBackMenuClick(Sender: TObject);
@@ -61,6 +64,7 @@ type
     procedure ChangeDataClick(Sender: TObject);
     procedure LVShowDataData(Sender: TObject; Item: TListItem);
     procedure changePatternClick(Sender: TObject);
+    procedure ActionList1Update(Action: TBasicAction; var Handled: Boolean);
   private
     { Private declarations }
   public
@@ -76,14 +80,21 @@ implementation
 
 uses Actions;
 
-procedure TMainForm.ReadyButtonClick(Sender: TObject);
+procedure TMainForm.ActionList1Update(Action: TBasicAction;
+  var Handled: Boolean);
 begin
-  checkEdit();
+  if (PageControl1.ActivePageIndex = 3) then begin
+    editData.Enabled:= (LVShowData.ItemIndex <> -1);
+    deleteData.Enabled:= (LVShowData.ItemIndex <> -1);
+    actShowExtraInfo.Enabled:= (LVShowData.ItemIndex <> -1);
+  end;
+
+  Handled:= true; //обработка сделана мной, дальше не надо
 end;
 
 procedure TMainForm.ChangeDataClick(Sender: TObject);
 begin
-  PageControl1.ActivePageIndex:= 4;  //
+  PageControl1.ActivePageIndex:= 4;
 end;
 
 procedure ClearScrolBox(myBox: TScrollBox);
@@ -112,11 +123,17 @@ end;
 
 procedure TMainForm.ChooseDataClick(Sender: TObject);
 begin
+  MoreData.Visible:= false;
+  LVShowData.Tag:= -1;
   case (Sender as TButton).TabOrder of
     0: objTLearntSubject.createPageShowList;
     1: objTTeacher.createPageShowList;
     2: objTStudent.createPageShowList;
-    3: objTGroup.createPageShowList;
+    3: begin
+      objTGroup.createPageShowList;
+      MoreData.Visible:= true;
+      MoreData.Caption:= 'расписание';
+    end;
     4: objTSpecialty.createPageShowList;
     5: objTFaculty.createPageShowList;
     6: objTLearntForm.createPageShowList;
@@ -127,8 +144,6 @@ end;
 
 procedure TurnOnForm(formNow: TForm);
 begin
-  //MainForm.Hide;
-
   formNow.Show;
 end;
 
@@ -143,8 +158,20 @@ begin
   PageControl1.ActivePageIndex:= 1;
 end;
 
-procedure TMainForm.ExitClick(Sender: TObject);
+procedure TMainForm.btnExitClick(Sender: TObject);
 begin
+  if (Sender is TButton) then begin
+    if (Sender as TButton).tag = 1 then SaveDataFile; //save and exit
+  end;
+
+  objTTeacher.Free;
+  objTLearntSubject.Free;
+  objTStudent.Free;
+  objTGroup.Free;
+  objTSpecialty.Free;
+  objTLearntForm.Free;
+  objTFaculty.Free;
+
   MainForm.Close;
 end;
 
@@ -158,30 +185,63 @@ end;
 procedure TMainForm.LVShowDataData(Sender: TObject; Item: TListItem);
 var
   element: VarArr;
+  arrGroup: TArrSbjTch;
+  arrElement: TSbjTeacher;
 begin
-  case workObjNow of
-    TAllType(1): element:= objTTeacher.ReadT( objTTeacher.GetByIndex(item.Index));
-    TAllType(0): element:= objTLearntSubject.ReadT( objTLearntSubject.GetByIndex(item.Index));
-    TAllType(2): element:= objTStudent.ReadT( objTStudent.GetByIndex(item.Index));
-    TAllType(3): element:= objTGroup.ReadT( objTGroup.GetByIndex(item.Index));
-    TAllType(4): element:= objTSpecialty.ReadT( objTSpecialty.GetByIndex(item.Index));
-    TAllType(6): element:= objTLearntForm.ReadT( objTLearntForm.GetByIndex(item.Index));
-    TAllType(5): element:= objTFaculty.ReadT( objTFaculty.GetByIndex(item.Index));
-  end;
-  item.Caption:= element[0];
-  for var i := 1 to High(element) do begin
-    item.SubItems.Add(element[i]);
+  if (sender is TListview) then begin
+    if (sender as TListview).Tag = -1 then begin //show list
+
+      case workObjNow of
+        TAllType(1): element:= objTTeacher.ReadT( objTTeacher.GetByIndex(item.Index));
+        TAllType(0): element:= objTLearntSubject.ReadT( objTLearntSubject.GetByIndex(item.Index));
+        TAllType(2): element:= objTStudent.ReadT( objTStudent.GetByIndex(item.Index));
+        TAllType(3): element:= objTGroup.ReadT( objTGroup.GetByIndex(item.Index));
+        TAllType(4): element:= objTSpecialty.ReadT( objTSpecialty.GetByIndex(item.Index));
+        TAllType(6): element:= objTLearntForm.ReadT( objTLearntForm.GetByIndex(item.Index));
+        TAllType(5): element:= objTFaculty.ReadT( objTFaculty.GetByIndex(item.Index));
+      end;
+
+      item.Caption:= element[0];
+      for var i := 1 to High(element) do begin
+        item.SubItems.Add(element[i]);
+      end;
+
+    end
+    //show array from type now only from group
+    else if (workObjNow = TAllType(3)) then begin
+      arrGroup:= GetArrDataFromGroup((sender as TListview).Tag);
+      arrElement:= arrGroup[item.Index];
+
+      item.Caption:= intToStr(arrElement.id);
+      item.SubItems.Add(intToStr(arrElement.sbj));
+      item.SubItems.Add(intToStr(arrElement.teacher));
+      //item.SubItems.Add(intToStr(arrElement.typeSbj));
+      item.SubItems.Add(intToStr(arrElement.hour));
+      item.SubItems.Add(intToStr(arrElement.credits));
+    end;
   end;
 end;
 
+//from your choose pattern create page with ask words for pattern
 procedure TMainForm.PatternButtonAction(sender: TObject);
-var
-  findWords: SArr;
 begin
-  findWords:= ListOfWords((sender as Tbutton).Caption);
+  fileNameNow:= (sender as Tbutton).Caption;
+  findWords:= ListOfWords(fileNameNow);
   ClearScrolBox(ScrollBoxPattern);
   CreateAskTexBox(findWords);
 
+end;
+
+procedure TMainForm.ReadyButtonClick(Sender: TObject);
+begin
+  getWords:= ReadAnswer();
+  FindGroup();
+  if (checkEdit()) then begin
+
+    MakeWords(findWords, getWords);
+    ClearScrolBox(ScrollBoxPattern);
+    createOutFile(findWords);
+  end;
 end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
@@ -197,6 +257,7 @@ begin
   deleteData.OnExecute:= Actions.MyActions.ActDeleteData;
   addData.OnExecute:= Actions.MyActions.ActAddData;
   editData.OnExecute:= Actions.MyActions.ActEditData;
+  actShowExtraInfo.OnExecute:= Actions.MyActions.ActShowExtraData;
 end;
 
 end.

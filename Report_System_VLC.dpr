@@ -7,13 +7,12 @@ uses
   BasicFunction in 'BasicFunction.pas',
   Pattern in 'Pattern.pas',
   DataCreate in 'DataCreate.pas',
-  show in 'show.pas',
-  funcCompareAndtoString in 'funcCompareAndtoString.pas',
   AddEdit in 'AddEdit.pas' {FrmAddEditElement},
   Actions in 'Actions.pas',
   WorkWithData in 'WorkWithData.pas',
   ULoadData in 'ULoadData.pas',
-  SaveData in 'SaveData.pas';
+  SaveData in 'SaveData.pas',
+  PatternShow in 'PatternShow.pas';
 
 {$R *.res}
 
