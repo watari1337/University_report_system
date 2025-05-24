@@ -8,25 +8,110 @@ type
     class procedure ActAddData(Senser: TObject);
     class procedure ActEditData(Sender: TObject);
     class procedure ActShowExtraData(Sender: TObject);
+    class procedure CheckData(Sender: TObject);
   end;
 
 implementation
 
 uses mainCodeForm, Vcl.Dialogs, DataBase, system.SysUtils, AddEdit,
-     Vcl.StdCtrls, Vcl.Samples.Spin, Controls, WorkWithData, Vcl.ComCtrls;
+     Vcl.StdCtrls, Vcl.Samples.Spin, Controls, WorkWithData, Vcl.ComCtrls,
+     Vcl.Graphics, pattern;
+
+function checkDataEdit(edit: TEdit): boolean;
+begin
+  result:= true;
+  if (edit.text = '') then result:= false
+  else begin
+
+  end;
+
+end;
+
+function checkDataSpin(spin: TSpinEdit): boolean;
+begin
+  result:= true;
+  if (spin.Value = 0) then result:= false
+
+  else if (workObjNow = Student) and (spin.Tag = 2) //enter group in list of group
+  and (objTGroup.CheckAny(spin.Value, 0) = false)
+    then result:= false
+
+  else if (workObjNow = Group) and (MainForm.LVShowData.Tag = -1)  //проверка кода группы
+  and (spin.Tag = 0)
+  and( (objTFaculty.CheckAny( GetIdFromGroup(1, spin.Value), 0) = false)
+  or (objTSpecialty.CheckAny( GetIdFromGroup(2, spin.Value), 0) = false)
+  or (objTLearntForm.CheckAny( GetIdFromGroup(3, spin.Value), 0) = false))
+    then result:= false
+
+  else if (workObjNow = Group) and (MainForm.LVShowData.Tag <> -1)  //предмет в рассписании группы существует
+  and (spin.Tag = 1) and (objTLearntSubject.CheckAny( spin.Value, 0) = false)
+    then result:= false
+
+  else if (workObjNow = Group) and (MainForm.LVShowData.Tag <> -1)  //препод в рассписании группы существует
+  and (spin.Tag = 2) and (objTTeacher.CheckAny( spin.Value, 0) = false)
+    then result:= false
+
+  else if (workObjNow = Specialty) and (spin.Tag = 1)
+  and (objTFaculty.CheckAny(spin.Value, 0) = false)
+    then result:= false
+end;
+
+class procedure MyActions.CheckData(Sender: TObject);
+var
+  btn: TButton;
+  edit: TEdit;
+  spin: TSpinEdit;
+  ans: boolean;
+begin
+  ans:= true;
+  for var i:= 0 to FrmAddEditElement.PnEdit.ControlCount - 1 do begin
+    if (FrmAddEditElement.PnEdit.Controls[i] is TEdit) then begin
+      edit:= (FrmAddEditElement.PnEdit.Controls[i] as TEdit);
+      if (checkDataEdit(edit)) then begin
+        edit.Color:= clWebMediumSpringGreen;
+      end
+      else begin
+        edit.Color:= $005858FF;
+        ans:= false;
+      end;
+    end
+    else if (FrmAddEditElement.PnEdit.Controls[i] is TSpinEdit) then begin
+      spin:= (FrmAddEditElement.PnEdit.Controls[i] as TSpinEdit);
+      if (checkDataSpin(spin)) then begin
+        spin.Color:= clWebMediumSpringGreen;
+      end
+      else begin
+        spin.Color:= $005858FF;
+        ans:= false;
+      end;
+    end;
+  end;
+
+  if (ans) then FrmAddEditElement.ModalResult:= mrOk;
+
+end;
 
 class procedure MyActions.ActDeleteData(Sender: TObject);
+var
+  selected: integer;
 begin
   if (MainForm.PageControl1.ActivePageIndex = 3) and
   (assigned(MainForm.LVShowData.Selected)) then begin
-    case workObjNow of
-      Teacher: objTTeacher.deleteNode(strToInt(MainForm.LVShowData.Selected.Caption));
-      LearntSubject: objTLearntSubject.deleteNode(strToInt(MainForm.LVShowData.Selected.Caption));
-      Student: objTStudent.deleteNode(strToInt(MainForm.LVShowData.Selected.Caption));
-      Group: objTGroup.deleteNode(strToInt(MainForm.LVShowData.Selected.Caption));
-      Specialty: objTSpecialty.deleteNode(strToInt(MainForm.LVShowData.Selected.Caption));
-      LearntForm: objTLearntForm.deleteNode(strToInt(MainForm.LVShowData.Selected.Caption));
-      Faculty: objTFaculty.deleteNode(strToInt(MainForm.LVShowData.Selected.Caption));
+    if (MainForm.LVShowData.tag = -1) then begin
+      selected:= strToInt(MainForm.LVShowData.Selected.Caption);
+      case workObjNow of
+        Teacher: objTTeacher.deleteNode( selected);
+        LearntSubject: objTLearntSubject.deleteNode( selected);
+        Student: objTStudent.deleteNode( selected);
+        Group: objTGroup.deleteNode( selected);
+        Specialty: objTSpecialty.deleteNode( selected);
+        LearntForm: objTLearntForm.deleteNode( selected);
+        Faculty: objTFaculty.deleteNode( selected);
+      end;
+    end
+    else begin
+      selected:= MainForm.LVShowData.Selected.Index;
+      DeleteGroupArrAny(MainForm.LVShowData.Tag, selected);
     end;
   end;
 end;
@@ -40,6 +125,11 @@ var
   baseWidth, baseHeight, widthNow, HeightNow, shiftWidth1, shiftWidth2,
   shiftHeight, maxWidth, maxHeight: integer;
 begin
+  //free Form
+  for var I := (FrmAddEditElement.PnEdit.ComponentCount-1) downto 0 do
+    FrmAddEditElement.PnEdit.Components[i].Free;
+  for var I := (FrmAddEditElement.PnExit.ComponentCount-1) downto 0 do
+    FrmAddEditElement.PnExit.Components[i].Free;
 
   baseWidth:= 250;
   baseHeight:= 60;
@@ -83,11 +173,13 @@ begin
       edit.tag:= i;
     end;
 
-    maxHeight:= heightNow;
-    inc(widthNow, baseWidth + shiftWidth2);
-    if (widthNow >  FrmAddEditElement.Width - baseWidth - shiftWidth1) then begin
-      widthNow:= shiftWidth1;
-      inc(HeightNow, shiftHeight);
+    if (controlCode[i] <> 0) then begin
+      maxHeight:= heightNow;
+      inc(widthNow, baseWidth + shiftWidth2);
+      if (widthNow >  FrmAddEditElement.Width - baseWidth - shiftWidth1) then begin
+        widthNow:= shiftWidth1;
+        inc(HeightNow, shiftHeight);
+      end;
     end;
   end;
 
@@ -105,7 +197,8 @@ begin
     btn.Width:= baseWidth;
     btn.Height:= baseHeight;
     btn.Font.Size:= 16;
-    btn.ModalResult:= mrOk;
+    //btn.ModalResult:= mrOk;
+    if (i = 0) then btn.OnClick:= MyActions.CheckData;
     if (i = 1) then btn.ModalResult:= mrCancel;
     inc(widthNow, baseWidth + shiftWidth2);
   end;
@@ -116,14 +209,21 @@ end;
 
 procedure GenerCodeHint(var controlCode: Iarr; var hint: SArr);
 begin
-  case workObjNow of  //1 numberInput, 2 stringInput
-    Teacher: controlCode:= [1, 2, 2];
-    LearntSubject: controlCode:= [1, 2];
-    Student: controlCode:= [1, 1, 1, 2];
-    Group: controlCode:= [1, 1, 1];
-    Specialty: controlCode:= [1, 1, 2];
-    LearntForm: controlCode:= [1, 2];
-    Faculty: controlCode:= [1, 2, 2];
+  if (MainForm.LVShowData.tag = -1) then begin
+    case workObjNow of  //0 nothing, 1 numberInput, 2 stringInput
+      Teacher: controlCode:= [0, 2, 2, 2, 2];
+      LearntSubject: controlCode:= [0, 2];
+      Student: controlCode:= [0, 1, 1, 2, 2, 2];
+      Group: controlCode:= [1, 0, 0];
+      Specialty: controlCode:= [0, 1, 2];
+      LearntForm: controlCode:= [0, 2];
+      Faculty: controlCode:= [0, 2, 2, 2, 2];
+    end;
+  end
+  else begin
+    case workObjNow of
+      Group: controlCode:= [0, 1, 1, 1, 1];
+    end;
   end;
   hint:= makeTitle(workObjNow);
 end;
@@ -131,9 +231,12 @@ end;
 function FromFrameToVarArr(): varArr;
 var
   control: TControl;
+  controlArr: Iarr;
+  hint: Sarr;
 begin
+  GenerCodeHint(controlArr, hint);
   with FrmAddEditElement.PnEdit do begin
-    setLength(result, ControlCount);
+    setLength(result, Length(controlArr));
     for var i:= 0 to ControlCount-1 do begin
       control:= Controls[i];
       if (control is TEdit) then
@@ -150,14 +253,36 @@ var
   hint: SArr;
   firstText: VarArr;
   modalAns: TModalresult;
+  arr: varArr;
 begin
   GenerCodeHint(controlCode, hint);
+  //just zero arr при создании ничего не должно быть
   setLength(firstText, MainForm.LVShowData.Columns.Count);
   createAskForm(controlCode, hint, firstText);
 
   modalAns:= FrmAddEditElement.ShowModal;
   if (modalAns = mrOk) then begin
-    PushListT(FromFrameToVarArr());
+
+    arr:= FromFrameToVarArr();
+    if (MainForm.LVShowData.tag = -1) then begin //add ID and another
+      case workObjNow of
+        Teacher: arr[0]:= objTTeacher.LastId +1; //only id
+        LearntSubject: arr[0]:= objTLearntSubject.LastId +1; //only id
+        Student: begin
+          arr[0]:= (arr[2] div 10) * 1000 + objTGroup.FindAny(arr[2], 0, 1)+1; //only id
+        end;
+        Group: begin
+          arr[1]:= 0; arr[2]:= 0;
+        end;
+        Specialty: arr[0]:= objTSpecialty.FreeId; //only id
+        LearntForm: arr[0]:= objTLearntForm.FreeId; //only id
+        Faculty: arr[0]:= objTFaculty.FreeId; //only id
+      end;
+    end;
+    //else реализовано непосредственно в добавлении
+
+    if (MainForm.LVShowData.tag = -1) then PushListT(arr)
+    else pushGroupArr(MainForm.LVShowData.Tag, arr);
   end
 end;
 
@@ -168,38 +293,57 @@ var
   firstText: VarArr;
   index: integer;
   modalAns: TModalresult;
+  arr: varArr;
 begin
-  if (MainForm.PageControl1.ActivePageIndex = 3) and
-  (assigned(MainForm.LVShowData.Selected)) then begin
-    GenerCodeHint(controlCode, hint);
+  GenerCodeHint(controlCode, hint);
 
-    with MainForm.LVShowData do
-    begin
-      index:= 0;
-      setLength(firstText, Columns.Count);
-      firstText[index]:= Selected.caption;
+  with MainForm.LVShowData do begin
+    index:= 0;
+    setLength(firstText, Columns.Count);
+    firstText[index]:= Selected.caption;
+    inc(index);
+    for var i:= 0 to Columns.Count-2 do begin
+      firstText[index]:= Selected.SubItems[i];
       inc(index);
-      for var i:= 0 to Columns.Count-2 do begin
-        firstText[index]:= Selected.SubItems[i];
-        inc(index);
+    end;
+  end;
+  createAskForm(controlCode, hint, firstText);
+
+  modalAns:= FrmAddEditElement.ShowModal;
+  if (modalAns = mrOk) then begin
+
+    arr:= FromFrameToVarArr();
+    if (MainForm.LVShowData.tag = -1) then begin //add ID and another
+      case workObjNow of
+        Teacher: arr[0]:= firstText[0]; //only id
+        LearntSubject: arr[0]:= firstText[0]; //only id
+        Student: arr[0]:= firstText[0]; //only id
+        Group: begin
+          arr[1]:= firstText[1]; arr[2]:= firstText[2];
+        end;
+        Specialty: arr[0]:= firstText[0]; //only id
+        LearntForm: arr[0]:= firstText[0]; //only id
+        Faculty: arr[0]:= firstText[0]; //only id
       end;
     end;
-    createAskForm(controlCode, hint, firstText);
+    //else реализовано непосредственно в добавлении
 
-    modalAns:= FrmAddEditElement.ShowModal;
-    if (modalAns = mrOk) then begin
+    if MainForm.LVShowData.tag = -1 then begin
       index:= strToint(MainForm.LVShowData.Selected.caption);
       case workObjNow of
-        Teacher: objTTeacher.ChangeT(index, FromFrameToVarArr());
-        LearntSubject: objTLearntSubject.ChangeT(index, FromFrameToVarArr());
-        Student: objTStudent.ChangeT(index, FromFrameToVarArr());
-        Group: objTGroup.ChangeT(index, FromFrameToVarArr());
-        Specialty: objTSpecialty.ChangeT(index, FromFrameToVarArr());
-        LearntForm: objTLearntForm.ChangeT(index, FromFrameToVarArr());
-        Faculty: objTFaculty.ChangeT(index, FromFrameToVarArr());
+        Teacher: objTTeacher.ChangeT(index, arr);
+        LearntSubject: objTLearntSubject.ChangeT(index, arr);
+        Student: objTStudent.ChangeT(index, arr);
+        Group: objTGroup.ChangeT(index, arr);
+        Specialty: objTSpecialty.ChangeT(index, arr);
+        LearntForm: objTLearntForm.ChangeT(index, arr);
+        Faculty: objTFaculty.ChangeT(index, arr);
       end;
     end
-  end;
+    else begin
+      EditData(MainForm.LVShowData.Tag, MainForm.LVShowData.Selected.Index, arr);
+    end;
+  end
 end;
 
 class procedure MyActions.ActShowExtraData(Sender: TObject);
@@ -208,13 +352,13 @@ var
   widths: IArr;
   col: TListColumn;
 begin
-  if (MainForm.PageControl1.ActivePageIndex = 3) and
-  (assigned(MainForm.LVShowData.Selected)) then begin
-    with MainForm.LVShowData do begin
+  with MainForm.LVShowData do begin
+    if (tag = -1) then begin
+      MainForm.MoreData.Caption:= 'Группы';
       Tag:= strtoInt(items[ItemIndex].Caption);
       Items.Count:= objTGroup.ReadT( objTGroup.Find(tag))[2];
-      
-      titles:= ['id', 'id предмета','id учителя','часов', 'credits'];
+
+      titles:= makeTitle(workObjNow);
       widths:= [90, 90, 90, 90, 90];
       Columns.Clear;
       for var i:= 0 to length(titles)-1 do begin
@@ -223,8 +367,15 @@ begin
         col.Width:= widths[i];
       end;
       col.Width:= -2;
-      Invalidate;
+    end
+    else begin
+      MainForm.MoreData.Caption:= 'расписание';
+      tag:= -1;
+      objTGroup.createPageShowList;
     end;
+
+    Selected:= nil;
+    Invalidate;
   end;
 end;
 

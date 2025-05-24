@@ -1,4 +1,4 @@
-unit PatternShow;
+﻿unit PatternShow;
 
 interface
 
@@ -72,7 +72,7 @@ var
   btn: TButton;
   panel: TPanel;
   top, width: integer;
-  neadGoup, neadPName: boolean;
+  neadHourCredits: boolean;
   NeadString: array[0..ngw2] of boolean;
 begin
   Btn:= TButton.Create(MainForm.ScrollBoxPattern);
@@ -88,26 +88,37 @@ begin
 
   top:= 65;
   width:= MainForm.ScrollBoxPattern.ClientWidth - 40;
+  neadHourCredits:= false;
   for var i:= Low(arr) to High(arr) do begin
     for var j:= Low(WordsFirst) to High(WordsFirst) do begin
       if (arr[i].text = WordsFirst[j]) then begin
-        createEditPattern(Top, Width, arr[i].text);
-        if (WordsFirst[j] = 'фио') then NeadString[0]:= false;
-        if (WordsFirst[j] = 'предмет') then NeadString[1]:= false;
-
+        if (WordsFirst[j] = 'фио') then begin
+          NeadString[0]:= false;
+          createEditPattern(Top, Width, 'имя');
+          createEditPattern(Top, Width, 'фамилия');
+          createEditPattern(Top, Width, 'отчество');
+        end
+        else begin
+          createEditPattern(Top, Width, arr[i].text);
+          if (WordsFirst[j] = 'предмет') then NeadString[1]:= false;
+        end;
       end;
     end;
-  end;
 
-  for var i:= Low(arr) to High(arr) do begin
     for var j:= Low(WordsSecond) to High(WordsSecond) do begin
       if (arr[i].text = WordsSecond[j]) and (NeadString[j]) then begin
         createEditPattern(Top, Width, arr[i].text);
         NeadString[j]:= false;
       end;
     end;
+
+    if (arr[i].text = 'часов') or (arr[i].text = 'зачедин') then
+      neadHourCredits:= true;
   end;
+
   if (NeadString[0]) then createEditPattern(Top, Width, 'группа');
+  if (NeadString[1]) and (neadHourCredits) then
+    createEditPattern(Top, Width, 'предмет');
 
 end;
 

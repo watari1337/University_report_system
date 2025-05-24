@@ -18,7 +18,7 @@ object MainForm: TMainForm
     Top = 0
     Width = 1010
     Height = 590
-    ActivePage = PageMenu
+    ActivePage = PageCreateByPattern
     Align = alClient
     TabOrder = 0
     ExplicitWidth = 1008
@@ -22230,10 +22230,7 @@ object MainForm: TMainForm
           D7BD966E3C1200000000000000000000000000000000002F506BF79050000000
           000000000000000000000000000000000000000000000000000000001FFFD9}
         Stretch = True
-        ExplicitLeft = 440
-        ExplicitTop = 368
-        ExplicitWidth = 105
-        ExplicitHeight = 105
+        ExplicitLeft = 3
       end
       object Test: TButton
         Left = 48
@@ -22251,32 +22248,32 @@ object MainForm: TMainForm
         OnClick = TestClick
       end
       object ChangeData: TButton
-        Left = 716
-        Top = 241
+        Left = 721
+        Top = 240
         Width = 209
         Height = 49
         Anchors = []
         Caption = #1041#1072#1079#1072' '#1076#1072#1085#1085#1099#1093
         TabOrder = 1
         OnClick = ChangeDataClick
-        ExplicitLeft = 714
-        ExplicitTop = 237
+        ExplicitLeft = 719
+        ExplicitTop = 236
       end
       object changePattern: TButton
-        Left = 716
-        Top = 152
+        Left = 721
+        Top = 147
         Width = 209
         Height = 49
         Anchors = []
         Caption = #1080#1079#1084#1077#1085#1077#1085#1080#1077' '#1096#1072#1073#1083#1086#1085#1086#1074
         TabOrder = 2
         OnClick = changePatternClick
-        ExplicitLeft = 714
-        ExplicitTop = 150
+        ExplicitLeft = 719
+        ExplicitTop = 145
       end
       object createFile: TButton
-        Left = 716
-        Top = 70
+        Left = 721
+        Top = 66
         Width = 209
         Height = 49
         Anchors = []
@@ -22289,11 +22286,11 @@ object MainForm: TMainForm
         ParentFont = False
         TabOrder = 3
         OnClick = createFileClick
-        ExplicitLeft = 714
-        ExplicitTop = 69
+        ExplicitLeft = 719
+        ExplicitTop = 65
       end
       object btnExit: TButton
-        Left = 716
+        Left = 721
         Top = 321
         Width = 209
         Height = 49
@@ -22307,12 +22304,12 @@ object MainForm: TMainForm
         ParentFont = False
         TabOrder = 4
         OnClick = btnExitClick
-        ExplicitLeft = 714
+        ExplicitLeft = 719
         ExplicitTop = 316
       end
       object ExitSave: TButton
         Tag = 1
-        Left = 716
+        Left = 721
         Top = 399
         Width = 209
         Height = 49
@@ -22326,7 +22323,7 @@ object MainForm: TMainForm
         ParentFont = False
         TabOrder = 5
         OnClick = btnExitClick
-        ExplicitLeft = 714
+        ExplicitLeft = 719
         ExplicitTop = 393
       end
     end
@@ -22343,6 +22340,8 @@ object MainForm: TMainForm
         Color = clCream
         ParentBackground = False
         TabOrder = 0
+        ExplicitLeft = 815
+        ExplicitHeight = 572
         object GoBackMenu: TButton
           Tag = 2
           Left = 1
@@ -22360,6 +22359,40 @@ object MainForm: TMainForm
           TabOrder = 0
           OnClick = GoBackMenuClick
         end
+        object BtnSaveAsOrAdd: TButton
+          Tag = 2
+          Left = 1
+          Top = 76
+          Width = 183
+          Height = 48
+          Align = alCustom
+          Caption = 'BtnSaveAsOrAdd'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -21
+          Font.Name = 'Segoe UI'
+          Font.Style = []
+          ParentFont = False
+          TabOrder = 1
+          OnClick = GoBackMenuClick
+        end
+        object BtnDelOrSave: TButton
+          Tag = 2
+          Left = 0
+          Top = 147
+          Width = 183
+          Height = 48
+          Align = alCustom
+          Caption = #1089#1086#1093#1088#1072#1085#1080#1090#1100
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -21
+          Font.Name = 'Segoe UI'
+          Font.Style = []
+          ParentFont = False
+          TabOrder = 2
+          OnClick = GoBackMenuClick
+        end
       end
       object ScrollBoxPattern: TScrollBox
         Left = 0
@@ -22368,6 +22401,8 @@ object MainForm: TMainForm
         Height = 580
         Align = alClient
         TabOrder = 1
+        ExplicitWidth = 815
+        ExplicitHeight = 572
       end
     end
     object FileTextOut: TTabSheet

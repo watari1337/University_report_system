@@ -53,6 +53,8 @@ type
     ODPattern: TOpenDialog;
     MoreData: TButton;
     actShowExtraInfo: TAction;
+    BtnSaveAsOrAdd: TButton;
+    BtnDelOrSave: TButton;
     procedure ReadyButtonClick(Sender: TObject);
     procedure TestClick(Sender: TObject);
     procedure btnExitClick(Sender: TObject);
@@ -82,11 +84,35 @@ uses Actions;
 
 procedure TMainForm.ActionList1Update(Action: TBasicAction;
   var Handled: Boolean);
+var
+  status: boolean;
 begin
   if (PageControl1.ActivePageIndex = 3) then begin
-    editData.Enabled:= (LVShowData.ItemIndex <> -1);
-    deleteData.Enabled:= (LVShowData.ItemIndex <> -1);
-    actShowExtraInfo.Enabled:= (LVShowData.ItemIndex <> -1);
+
+    if (LVShowData.Tag = -1) then begin
+      status:= (LVShowData.ItemIndex <> -1);
+      if (workObjNow = TAllType(3)) then status:= false;
+      editData.Enabled:= status;
+
+      if (workObjNow = TAllType(4)) or (workObjNow = TAllType(5)) or
+      (workObjNow = TAllType(6)) then begin
+        deleteData.Enabled:= false;
+        status:= false;
+        if (workObjNow = TAllType(4)) and (objTSpecialty.Count < 100) then status:= true;
+        AddData.Enabled:= status;
+      end
+      else begin
+        AddData.Enabled:= true;
+        deleteData.Enabled:= (LVShowData.ItemIndex <> -1);
+        actShowExtraInfo.Enabled:= (LVShowData.ItemIndex <> -1);
+      end;
+    end
+    else begin
+      editData.Enabled:= (LVShowData.ItemIndex <> -1);
+      deleteData.Enabled:= (LVShowData.ItemIndex <> -1);
+      AddData.Enabled:= objTGroup.FindAny(LVShowData.Tag, 0, 2) < NArrSbjTch;
+      actShowExtraInfo.Enabled:= true;
+    end;
   end;
 
   Handled:= true; //обработка сделана мной, дальше не надо
@@ -177,6 +203,7 @@ end;
 
 procedure TMainForm.GoBackMenuClick(Sender: TObject);
 begin
+  MainForm.LVShowData.Selected:= nil;
   PageControl1.ActivePageIndex:= 0;
   //if (Sender as TButton).Tag = 1 then ClearScrolBox(ScrollBoxInfo);
   if (Sender as TButton).Tag = 2 then ClearScrolBox(ScrollBoxPattern);
@@ -209,7 +236,7 @@ begin
     end
     //show array from type now only from group
     else if (workObjNow = TAllType(3)) then begin
-      arrGroup:= GetArrDataFromGroup((sender as TListview).Tag);
+      arrGroup:= GetArrDataFromGroup((sender as TListview).Tag)^;
       arrElement:= arrGroup[item.Index];
 
       item.Caption:= intToStr(arrElement.id);
@@ -228,7 +255,11 @@ begin
   fileNameNow:= (sender as Tbutton).Caption;
   findWords:= ListOfWords(fileNameNow);
   ClearScrolBox(ScrollBoxPattern);
-  CreateAskTexBox(findWords);
+  if (length(findWords) > 0) then CreateAskTexBox(findWords)
+  else begin
+    ClearScrolBox(ScrollBoxPattern);
+    createOutFile(findWords);
+  end;
 
 end;
 

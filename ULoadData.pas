@@ -146,10 +146,10 @@ procedure loadDataFile();
 begin
   reLoadPattern();
   loadFileTTeacher();
+  loadFileTGroup();     //important load group before student
   loadFileTStudent();
   loadFileTLearntSubject();
   loadFileTSpecialty();
-  loadFileTGroup();
   loadFileTLearntForm();
   loadFileTFaculty();
 end;

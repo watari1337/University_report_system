@@ -4,6 +4,9 @@ interface
 
 uses System.SysUtils;
 
+const
+  NArrSbjTch = 40;
+
 type
     TLearntSubject = Record
       id: integer;
@@ -13,25 +16,30 @@ type
     TTeacher = Record
       id: integer;
       workStatus: string[255]; //должность
-      name: string[255]; //ФИО
+      FirstName: string[40];   //ФИО
+      SecondName: string[40];
+      ThirdName: string[40];
     End;
 
     TStudent = Record
       id: integer;  //группа + 3 цифры (номер студента )
       year: integer;
       group: integer;
-      name: String[100];
+      FirstName: string[40];
+      SecondName: string[40];
+      ThirdName: string[40];
     End;
 
     TSbjTeacher = Record
       id: integer;
       sbj: integer;
       teacher: integer;
-      {typeSbj: integer; //лк пз лб}
       hour: integer; //часов изучения
       credits: integer;
+      {typeSbj: integer; //лк пз лб}
     End;
-    TArrSbjTch = array[0..40] of TSbjTeacher;
+    PArrSbjTch = ^TArrSbjTch;
+    TArrSbjTch = array[0..NArrSbjTch] of TSbjTeacher;
 
     TGroup = Record
       id: integer; //номер группы
@@ -54,13 +62,21 @@ type
     TFaculty = Record
       id: integer;
       name: string[255];
-      decanName: string[60];    //в дательном падеже
+      FirstName: string[40];
+      SecondName: string[40];
+      ThirdName: string[40];
     End;
+
+    IPair = Record
+      first: integer;
+      second: integer;
+    end;
 
     TallType = (LearntSubject, Teacher, Student, Group, Specialty, Faculty, LearntForm);
     TAllClasees = (Lk, Pz, lb);
     Sarr = array of string;
     Iarr = array of integer;
+    IPairArr = array of IPair;
     VarArr = array of variant;
     TarrPattern = array of string;
 
@@ -74,26 +90,34 @@ type
             inf: T;
             Next: AdrNode;
           End;
+      private
+        procedure DoAfterAdd(inf: T);
+        procedure DoAfterDelete(inf: T);
       public
         headList: AdrNode;
         listType: TallType;
         last: adrNode;
+        LastId: integer;
 
         constructor Create(listTypeNow: TallType);
         destructor Destroy();
         procedure pushList(inf: T);
         procedure pushEnd(inf: T);
-        procedure deleteNode(inf: integer);
+        procedure deleteNode(id: integer);
         procedure createPageShowList();
         function ReadT(from: T): VarArr;
         function Find(id: integer): T;
-        function FindAny(element: variant; collum, num: integer): variant;
+        function FindAny(id: variant; collum, num: integer): variant;
+        function FilterAny(id: variant; collum, num: integer): VarArr;
+        function CheckAny(element: variant; collum: integer): boolean;
         function Read1(id, num: integer): variant;
         procedure WriteT(from: VarArr; var writeTo: T);
+        procedure WriteAny(id, collum, num: integer; element: variant);
         procedure ChangeT(id: integer; from: VarArr);
         function SameId(element1: T; element2ID: integer): boolean;
         function GetByIndex(num: integer): T;
         function Count: integer;
+        function FreeId: integer;
     end;
 
     //это для типизированного файла, а в проге ещё в каждом должен быть адрес
@@ -122,6 +146,25 @@ begin
   result:= myElement1 = Element2ID;
 end;
 
+procedure BaseClass<T>.WriteAny(id, collum, num: integer; element: variant);
+var
+  Node: AdrNode;
+  noStop: boolean;
+  arr: VarArr;
+begin
+  Node:= headList^.Next;
+  noStop:= true;
+  while (Node <> nil) and (noStop) do begin
+    arr:= ReadT(Node^.inf);
+    if (arr[collum] = id) then begin
+      noStop:= false;
+      arr[num]:= element;
+      writeT(arr, Node^.inf);
+    end;
+    Node:= Node^.Next;
+  end;
+end;
+
 procedure BaseClass<T>.WriteT(from: VarArr; var writeTo: T);
 var
   nowTeacher: TTeacher absolute writeTo;
@@ -136,7 +179,9 @@ begin
     Teacher: begin
       nowTeacher.id:= from[0];
       nowTeacher.workStatus:= from[1];
-      nowTeacher.name:= from[2];
+      nowTeacher.FirstName:= from[2];
+      nowTeacher.SecondName:= from[3];
+      nowTeacher.ThirdName:= from[4];
     end;
     LearntSubject: begin
       nowLearntSubject.id:= from[0];
@@ -146,7 +191,9 @@ begin
       nowStudent.id:= from[0];
       nowStudent.year:= from[1];
       nowStudent.group:= from[2];
-      nowStudent.name:= from[3];
+      nowStudent.FirstName:= from[3];
+      nowStudent.SecondName:= from[4];
+      nowStudent.ThirdName:= from[5];
     end;
     Group: begin
       nowGroup.id:= from[0];
@@ -165,7 +212,9 @@ begin
     Faculty: begin
       nowFaculty.id:= from[0];
       nowFaculty.name:= from[1];
-      nowFaculty.decanName:= from[2];
+      nowFaculty.FirstName:= from[2];
+      nowFaculty.SecondName:= from[3];
+      nowFaculty.ThirdName:= from[4];
     end;
   end;
 end;
@@ -187,10 +236,8 @@ var
 begin
   case listType of
     Teacher: begin
-      SetLength(result, 3);
-      result[0]:= nowTeacher.id;
-      result[1]:= nowTeacher.workStatus;
-      result[2]:= nowTeacher.name;
+      result:= [nowTeacher.id, nowTeacher.workStatus,
+      nowTeacher.FirstName, nowTeacher.SecondName, nowTeacher.ThirdName];
     end;
     LearntSubject: begin
       SetLength(result, 2);
@@ -198,11 +245,13 @@ begin
       result[1]:= nowLearntSubject.name;
     end;
     Student: begin
-      SetLength(result, 4);
+      SetLength(result, 6);
       result[0]:= nowStudent.id;
       result[1]:= nowStudent.year;
       result[2]:= nowStudent.group;
-      result[3]:= nowStudent.name;
+      result[3]:= nowStudent.FirstName;
+      result[4]:= nowStudent.SecondName;
+      result[5]:= nowStudent.ThirdName;
     end;
     Group: begin
       SetLength(result, 3);
@@ -217,15 +266,11 @@ begin
       result[2]:= nowSpecialty.name;
     end;
     LearntForm: begin
-      SetLength(result, 2);
-      result[0]:= nowLearntForm.id;
-      result[1]:= nowLearntForm.name;
+      result:= [nowLearntForm.id, nowLearntForm.name];
     end;
     Faculty: begin
-      SetLength(result, 3);
-      result[0]:= nowFaculty.id;
-      result[1]:= nowFaculty.name;
-      result[2]:= nowFaculty.decanName;
+      result:= [nowFaculty.id, nowFaculty.name,
+      nowFaculty.FirstName, nowFaculty.SecondName, nowFaculty.ThirdName];
     end;
   end;
 end;
@@ -248,6 +293,23 @@ begin
   MainForm.LVShowData.Invalidate;
 end;
 
+function BaseClass<T>.CheckAny(element: variant; collum: integer): boolean;
+var
+  Node: AdrNode;
+  noStop: boolean;
+begin
+  result:= false;
+  Node:= headList^.Next;
+  noStop:= true;
+  while (Node <> nil) and (noStop) do begin
+    if (ReadT(Node^.inf)[collum] = element) then begin
+      noStop:= false;
+      result:= true;
+    end;
+    Node:= Node^.Next;
+  end;
+end;
+
 function BaseClass<T>.Count: integer;
 var
   node: AdrNode;
@@ -263,6 +325,7 @@ end;
 constructor BaseClass<T>.Create(listTypeNow: TallType);
 begin
   inherited Create;
+  lastId:= 0;
   listType:= listTypeNow;
   if (headList = nil) then begin
     new(headList);
@@ -283,6 +346,25 @@ begin
   inherited;
 end;
 
+function BaseClass<T>.FilterAny(id: variant; collum, num: integer): VarArr;
+var
+  Node: AdrNode;
+  index: integer;
+begin
+  Node:= headList^.Next;
+  setLength(result, 10);
+  index:= 0;
+  while (Node <> nil) do begin
+    if (ReadT(Node^.inf)[collum] = id) then begin
+      if (index >= length(result)) then setLength(result, Length(result)*2);
+      result[index]:= ReadT(Node^.inf)[num];
+      inc(index);
+    end;
+    Node:= Node^.Next;
+  end;
+  setLength(result, index);
+end;
+
 function BaseClass<T>.Find(id: integer): T;
 var
   Node: AdrNode;
@@ -299,20 +381,40 @@ begin
   end;
 end;
 
-function BaseClass<T>.FindAny(element: variant; collum, num: integer): variant;
+//элемент, колонка в которой ищет, колонка из которой взять
+function BaseClass<T>.FindAny(id: variant; collum, num: integer): variant;
 var
   Node: AdrNode;
   noStop: boolean;
 begin
+  result:= '';
   Node:= headList^.Next;
   noStop:= true;
   while (Node <> nil) and (noStop) do begin
-    if (ReadT(Node^.inf)[collum] = element) then begin
+    if (ReadT(Node^.inf)[collum] = id) then begin
       noStop:= false;
       result:= ReadT(Node^.inf)[num];
     end;
     Node:= Node^.Next;
   end;
+end;
+
+function BaseClass<T>.FreeId: integer;
+var
+  arr: array of boolean;
+  Node: AdrNode;
+  i: integer;
+begin
+  setLength(arr, lastId+1);
+  for i := Low(arr) to High(arr) do arr[i]:= false;
+  node:= headList^.Next;
+  while (Node <> nil) do begin
+    arr[Integer(ReadT(Node^.inf)[0])]:= true;
+    Node:= Node^.Next;
+  end;
+  i:= 0;
+  while (arr[i]) do inc(i);
+  result:= i;
 end;
 
 function BaseClass<T>.GetByIndex(num: integer): T;
@@ -326,6 +428,24 @@ begin
   result:= node^.inf;
 end;
 
+procedure BaseClass<T>.DoAfterAdd(inf: T);
+var
+  nowId: integer;
+  arr: varArr;
+begin
+  nowId:= ReadT(inf)[0];
+  if (lastId < nowId) then lastId:= nowId;
+
+  if (ListType = Student) then begin
+    nowId:= objTGroup.FindAny(ReadT(inf)[2], 0, 1)+1;
+    objTGroup.WriteAny(ReadT(inf)[2], 0, 1, nowId);
+  end;
+
+  MainForm.LVShowData.Items.Count:= MainForm.LVShowData.Items.Count+1;
+  MainForm.LVShowData.Selected:= nil;
+  MainForm.LVShowData.Invalidate;
+end;
+
 procedure BaseClass<T>.pushEnd(inf: T);
 var
   Node: AdrNode;
@@ -337,8 +457,7 @@ begin
     Node^.Next:= nil;
     last:= Node;
   end;
-  MainForm.LVShowData.Items.Count:= MainForm.LVShowData.Items.Count+1;
-  MainForm.LVShowData.Invalidate;
+  DoAfterAdd(inf);
 end;
 
 procedure BaseClass<T>.pushList(inf: T);
@@ -352,52 +471,99 @@ begin
     headList^.Next:= Node;
     if (last = headList) then last:= headList^.Next;
   end;
-
-  MainForm.LVShowData.Items.Count:= MainForm.LVShowData.Items.Count+1;
-  MainForm.LVShowData.Invalidate;
+  DoAfterAdd(inf);
 end;
 
-procedure BaseClass<T>.deleteNode(inf: integer);
+procedure BaseClass<T>.DoAfterDelete(inf: T);
+var
+  arr: IPairArr;
+  anyArr: varArr;
+  num, id: integer;
+  firstDelete: boolean;
+begin
+  firstDelete:= false;
+  if (workObjNow = LearntSubject) and (listType = LearntSubject) then begin
+    firstDelete:= true;
+    arr:= findGroupArr(ReadT(inf)[0], 1);
+    for var i := Low(arr) to High(arr) do begin
+      DeleteGroupArrAny(arr[i].first, arr[i].second-1);
+    end;
+  end
+  else if (workObjNow = Teacher) and (listType = Teacher) then begin
+    firstDelete:= true;
+    arr:= findGroupArr(ReadT(inf)[0], 2);
+    for var i := Low(arr) to High(arr) do begin
+      DeleteGroupArrAny(arr[i].first, arr[i].second-1);
+    end;
+  end
+  else if (workObjNow = Student) and (listType = Student) then begin
+    firstDelete:= true;
+    id:= ReadT(inf)[2]; //group
+    num:= objTGroup.FindAny(id, 0, 1);
+    objTGroup.WriteAny(id, 0, 1, num-1);
+  end
+  else if (workObjNow = Group) and (listType = Group) then begin
+    firstDelete:= true;
+    id:= ReadT(inf)[0]; //group
+    anyArr:= objTStudent.FilterAny(id, 2, 0);
+    for var i := Low(anyArr) to High(anyArr) do begin
+      objTStudent.deleteNode(anyArr[i]);
+    end;
+  end;
+
+  if (firstDelete) then begin
+    //отрисовка заново
+    MainForm.LVShowData.Items.Count:= MainForm.LVShowData.Items.Count-1;
+    MainForm.LVShowData.SetFocus;
+    MainForm.LVShowData.Invalidate;
+  end;
+end;
+
+procedure BaseClass<T>.deleteNode(id: integer);
 var
   curNode, preNode, delNode: AdrNode;
+  Stop: boolean;
 begin
+  stop:= false;
   curNode:= headList^.Next;
   preNode:= headList;
-  while (curNode <> nil) do begin
-    if (SameID(curNode^.inf, inf)) then begin
+  while (curNode <> nil) and (stop = false) do begin
+    if (SameID(curNode^.inf, id)) then begin
       preNode^.Next:= curNode^.Next;
       delNode:= curNode;
       curNode:= curNode^.Next;
       if (delNode = last) then last:= preNode;
+      DoAfterDelete(delNode^.inf);
       dispose(delNode);
+      stop:= true;
     end
     else begin
       preNode:= curNode;
       curNode:= curNode^.Next;
     end;
   end;
-  //createPageShowList; //отрисовка заново
-  MainForm.LVShowData.Items.Count:= MainForm.LVShowData.Items.Count-1;
-  MainForm.LVShowData.SetFocus;
-  MainForm.LVShowData.Invalidate;
 end;
 
 procedure BaseClass<T>.createPageShowList();
 var
-  btn: TBitBtn;
-  lbl: TLabel;
   LV: TListView;
   col: TListColumn;
   i, width: integer;
-  temp: AdrNode;
   titles: SArr;
   widths: Iarr;
-  elements: VarArr;
-  item: TListItem;
 begin
   titles:= makeTitle(listType);
-  widths:= [90, 300, 200, 100];
+  case listType of
+    Teacher: widths:= [60, 120, 160, 160, 160];
+    LearntSubject: widths:= [60, 200];
+    Student: widths:= [90, 70, 90, 160, 160, 160];
+    Group: widths:= [140, 160, 160];
+    Specialty: widths:= [100, 120, 400];
+    LearntForm: widths:= [60, 200];
+    Faculty: widths:= [60, 150, 160, 160, 160];
+  end;
   LV:= MainForm.LVShowData;
+  Lv.Items.Count:= Count;
   LV.Columns.Clear;
   for i:= 0 to length(titles)-1 do begin
     col:= LV.Columns.Add;
@@ -405,21 +571,6 @@ begin
     col.Width:= widths[i];
   end;
   col.Width:= -2;
-
-  Lv.Items.Count:= Count;
-
-  {Lv.Items.Clear;
-  temp:= headList^.Next;
-  while (temp <> nil) do
-  begin
-    elements:= ReadT(temp^.inf);
-    item:= LV.Items.add;
-    item.Caption:= elements[0];
-    for i := 1 to Length(elements)-1 do begin
-      item.SubItems.Add(elements[i]);
-    end;
-    temp:= temp^.Next;
-  end;}
 end;
 
 end.
