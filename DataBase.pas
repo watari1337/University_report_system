@@ -107,8 +107,8 @@ type
         procedure createPageShowList();
         function ReadT(from: T): VarArr;
         function Find(id: integer): T;
-        function FindAny(id: variant; collum, num: integer): variant;
-        function FilterAny(id: variant; collum, num: integer): VarArr;
+        function FindAny(element: variant; collum, num: integer): variant;
+        function FilterAny(element: variant; collum, num: integer): VarArr;
         function CheckAny(element: variant; collum: integer): boolean;
         function Read1(id, num: integer): variant;
         procedure WriteT(from: VarArr; var writeTo: T);
@@ -137,7 +137,7 @@ var
 implementation
 
 uses mainCodeForm, Vcl.Dialogs, Vcl.Graphics, Vcl.StdCtrls,
-     Vcl.ExtCtrls, Vcl.Buttons, Vcl.ComCtrls, WorkWithData;
+     Vcl.ExtCtrls, Vcl.Buttons, Vcl.ComCtrls, WorkWithData, Variants, BasicFunction;
 
 function BaseClass<T>.SameId(element1: T; element2ID: integer): boolean;
 var
@@ -297,12 +297,18 @@ function BaseClass<T>.CheckAny(element: variant; collum: integer): boolean;
 var
   Node: AdrNode;
   noStop: boolean;
+  element2: variant;
 begin
   result:= false;
   Node:= headList^.Next;
   noStop:= true;
   while (Node <> nil) and (noStop) do begin
-    if (ReadT(Node^.inf)[collum] = element) then begin
+    element2:= ReadT(Node^.inf)[collum];
+    if (VarIsStr(element2)) then element2:= FLowerRus(VarToStr(element2));
+    if (VarIsStr(element)) then element:= FLowerRus(VarToStr(element));
+
+
+    if (element2 = element) then begin
       noStop:= false;
       result:= true;
     end;
@@ -346,16 +352,21 @@ begin
   inherited;
 end;
 
-function BaseClass<T>.FilterAny(id: variant; collum, num: integer): VarArr;
+function BaseClass<T>.FilterAny(element: variant; collum, num: integer): VarArr;
 var
   Node: AdrNode;
   index: integer;
+  element2: variant;
 begin
   Node:= headList^.Next;
   setLength(result, 10);
   index:= 0;
   while (Node <> nil) do begin
-    if (ReadT(Node^.inf)[collum] = id) then begin
+    element2:= ReadT(Node^.inf)[collum];
+    if (VarIsStr(element2)) then element2:= FLowerRus(VarToStr(element2));
+    if (VarIsStr(element)) then element:= FLowerRus(VarToStr(element));
+
+    if (element2 = element) then begin
       if (index >= length(result)) then setLength(result, Length(result)*2);
       result[index]:= ReadT(Node^.inf)[num];
       inc(index);
@@ -382,16 +393,21 @@ begin
 end;
 
 //элемент, колонка в которой ищет, колонка из которой взять
-function BaseClass<T>.FindAny(id: variant; collum, num: integer): variant;
+function BaseClass<T>.FindAny(element: variant; collum, num: integer): variant;
 var
   Node: AdrNode;
   noStop: boolean;
+  element2: variant;
 begin
   result:= '';
   Node:= headList^.Next;
   noStop:= true;
   while (Node <> nil) and (noStop) do begin
-    if (ReadT(Node^.inf)[collum] = id) then begin
+    element2:= ReadT(Node^.inf)[collum];
+    if (VarIsStr(element2)) then element2:= FLowerRus(VarToStr(element2));
+    if (VarIsStr(element)) then element:= FLowerRus(VarToStr(element));
+
+    if (element2 = element) then begin
       noStop:= false;
       result:= ReadT(Node^.inf)[num];
     end;
@@ -436,7 +452,7 @@ begin
   nowId:= ReadT(inf)[0];
   if (lastId < nowId) then lastId:= nowId;
 
-  if (ListType = Student) then begin
+  if (ListType = Student) and (workObjNow = Student) then begin
     nowId:= objTGroup.FindAny(ReadT(inf)[2], 0, 1)+1;
     objTGroup.WriteAny(ReadT(inf)[2], 0, 1, nowId);
   end;

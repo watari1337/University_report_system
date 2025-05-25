@@ -20,7 +20,7 @@ type
 var
   findWords: SPArr;  //words from pattern
   getWords: InputArr; //user input words
-  groupId: integer;
+  groupId, statusPattern: integer;
   fileNameNow: string;
 
 function ListOfWords(fileName: string): SPArr;
@@ -38,10 +38,10 @@ uses System.SysUtils, BasicFunction, mainCodeForm,
      WorkWithData, DateUtils;
      
 const
-  goodWords: array[0..21] of string = ('фио','деканд','допфио','группафио',
+  goodWords: array[0..22] of string = ('фио','деканд','допфио','группафио',
   'группа','семестр','факульт','спец','предмет','пфио',
   'дата','моядата','формаобучения','пересдач','телефон','печать',
-  'местопредъявления','видзанятий', 'курс', 'год', 'часов', 'зачедин');
+  'местопредъявления','видзанятий', 'курс', 'год', 'часов', 'зачедин', 'инициалы');
 
 //по файлу создаёт возвращает массив из всех нужных слов в долларах, в виде
 //записи где есть сама строка и новер символа где это слово в строке
@@ -166,7 +166,7 @@ var
   find: boolean;
   num, num1: integer;
   str: string;
-  arr: VarArr;
+  arr1, arr2, arr3: VarArr;
 begin
   for var i := Low(words) to High(words) do begin
     //check words from input
@@ -182,7 +182,9 @@ begin
       else if words[i].text = 'спец' then
         str:= objTSpecialty.Read1(GetIdFromGroup(2, groupId), 2)
       else if words[i].text = 'деканд' then
-        str:= objTFaculty.Read1(GetIdFromGroup(1, groupId), 2)
+        str:= objTFaculty.Read1(GetIdFromGroup(1, groupId), 2) +
+        ' ' + objTFaculty.Read1(GetIdFromGroup(1, groupId), 3) +
+        ' ' + objTFaculty.Read1(GetIdFromGroup(1, groupId), 4)
       else if words[i].text = 'формаобучения' then
         str:= objTLearntForm.Read1(GetIdFromGroup(3, groupId), 1)
       //подсчёт зная группу
@@ -210,7 +212,9 @@ begin
         num:= objTLearntSubject.FindAny( GetElementUserWords('предмет', userWords), 1, 0);
         num:= takeFromArrGroup(2, num, 1, groupId);
         str:= objTTeacher.Read1(num, 1);
-        str:= str + ' ' + objTTeacher.Read1(num, 2);
+        str:= str + ' ' + objTTeacher.Read1(num, 2) +
+        ' ' + objTTeacher.Read1(num, 3) +
+        ' ' + objTTeacher.Read1(num, 4);
       end
       else if words[i].text = 'предмет' then begin    //ищем предмет тогда знаем пфио
         num:= objTTeacher.FindAny( GetElementUserWords('пфио', userWords), 2, 0);
@@ -238,11 +242,24 @@ begin
         end;
       end
       else if words[i].text = 'группафио' then begin
-        arr:= objTStudent.FilterAny(groupId, 2, 3);
-        for var j := Low(arr) to High(arr) do begin
-          str:= str + intToStr(j+1) + '   ' +arr[j] + sLineBreak;
+        arr1:= objTStudent.FilterAny(groupId, 2, 3);
+        arr2:= objTStudent.FilterAny(groupId, 2, 4); //фамилия
+        arr3:= objTStudent.FilterAny(groupId, 2, 5);
+        for var j := Low(arr1) to High(arr1) do begin
+          str:= str + intToStr(j+1) + '         ' + arr2[j] +
+          ' ' + String(arr1[j])[1] + '. ' + String(arr3[j])[1] + '.' + sLineBreak;
         end;
+      end
+      else if words[i].text = 'фио' then begin
+        str:= GetElementUserWords('имя', userWords) + ' ' +
+        GetElementUserWords('фамилия', userWords) + ' ' +
+        GetElementUserWords('отчество', userWords);
+      end
+      else if words[i].text = 'инициалы' then begin
+        str:= GetElementUserWords('имя', userWords)[1] + '. ' +
+        GetElementUserWords('отчество', userWords)[1] + '.';
       end;
+
 
       words[i].text:= str;
     end;
@@ -259,8 +276,8 @@ begin
   for var i:= 0 to MainForm.ScrollBoxPattern.ControlCount - 1 do begin
     if (MainForm.ScrollBoxPattern.Controls[i] is TEdit) then begin
       myEdit:= (MainForm.ScrollBoxPattern.Controls[i] as TEdit);
-      result[index].fileWord:= myEdit.Name;
-      result[index].userWord:= myEdit.Text;
+      result[index].fileWord:= Copy(myEdit.TextHint, 9, length(myEdit.TextHint)-8);
+      result[index].userWord:= trim(myEdit.Text);
       inc(index);
     end;
   end;
@@ -277,41 +294,43 @@ var
 function checkInputWord(Edit: TEdit): boolean;
 var
   num: integer;
+  strName: string;
 begin
   result:= false;
   {'фио','допфио','предмет','моядата',
   'пересдач','телефон','печать', 'местопредъявления','видзанятий', $группа$, $ПФИО$
   }
-  if (edit.Name = 'имя') then begin
+  strName:= Copy(edit.TextHint, 9, length(edit.TextHint)-8);
+  if (strName = 'имя') then begin
     FirstName:= edit.Text;
     result:= true;
     arr[0]:= edit;
     if (findGroupByName(FirstName, SecondName, ThirdName) <> -1) then CheckName:= true;
   end
-  else if (edit.Name = 'фамилия') then begin
+  else if (strName = 'фамилия') then begin
     SecondName:= edit.Text;
     result:= true;
     arr[1]:= edit;
     if (findGroupByName(FirstName, SecondName, ThirdName) <> -1) then CheckName:= true;
   end
-  else if (edit.Name = 'отчество') then begin
+  else if (strName = 'отчество') then begin
     ThirdName:= edit.Text;
     result:= true;
     arr[2]:= edit;
     if (findGroupByName(FirstName, SecondName, ThirdName) <> -1) then CheckName:= true;
   end
-  else if ((edit.Name = 'допфио') or (edit.Name = 'телефон') or (edit.Name = 'печать')
-  or (edit.Name = 'местопредъявления') or (edit.Name = 'видзанятий') or (edit.Name = 'пересдач')
-  or (edit.Name = 'моядата')) and (edit.Text <> '') then result:= true
-  else if (edit.Name = 'пфио') and
+  else if ((strName = 'допфио') or (strName = 'телефон') or (strName = 'печать')
+  or (strName = 'местопредъявления') or (strName = 'видзанятий') or (strName = 'пересдач')
+  or (strName = 'моядата')) and (edit.Text <> '') then result:= true
+  else if (strName = 'пфио') and
   (objTTeacher.CheckAny( edit.Text, 2)) and (objTGroup.CheckAny( groupId, 0)) and
   (takeFromArrGroup(2, objTTeacher.FindAny( edit.Text, 2, 0), 2, groupId) <> -1)
     then result:= true
-  else if (edit.Name = 'предмет') and
+  else if (strName = 'предмет') and
   (objTLearntSubject.CheckAny( edit.Text, 1)) and (objTGroup.CheckAny( groupId, 0)) and
   (takeFromArrGroup(1, objTLearntSubject.FindAny( edit.Text, 1, 0), 1, groupId) <> -1)
     then result:= true
-  else if (edit.Name = 'группа') and (TryStrToInt(edit.Text, num))
+  else if (strName = 'группа') and (TryStrToInt(Trim(edit.Text), num))
   and (objTGroup.CheckAny( edit.Text, 0))
     then result:= true;
 end;
@@ -334,7 +353,8 @@ begin
       end;
     end;
   end;
-  if CheckName = false then begin
+  //если первый элемент не nil тогда есть все элементы то есть есть фио
+  if (CheckName = false) and (assigned(arr[0])) then begin
     for var i := Low(arr) to High(arr) do begin
       arr[i].Color:= $005858FF;
     end;

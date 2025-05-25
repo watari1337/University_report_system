@@ -22248,32 +22248,18 @@ object MainForm: TMainForm
         OnClick = TestClick
       end
       object ChangeData: TButton
-        Left = 721
-        Top = 240
+        Left = 719
+        Top = 215
         Width = 209
         Height = 49
         Anchors = []
         Caption = #1041#1072#1079#1072' '#1076#1072#1085#1085#1099#1093
         TabOrder = 1
         OnClick = ChangeDataClick
-        ExplicitLeft = 719
-        ExplicitTop = 236
-      end
-      object changePattern: TButton
-        Left = 721
-        Top = 147
-        Width = 209
-        Height = 49
-        Anchors = []
-        Caption = #1080#1079#1084#1077#1085#1077#1085#1080#1077' '#1096#1072#1073#1083#1086#1085#1086#1074
-        TabOrder = 2
-        OnClick = changePatternClick
-        ExplicitLeft = 719
-        ExplicitTop = 145
       end
       object createFile: TButton
-        Left = 721
-        Top = 66
+        Left = 719
+        Top = 131
         Width = 209
         Height = 49
         Anchors = []
@@ -22284,14 +22270,12 @@ object MainForm: TMainForm
         Font.Name = 'Segoe UI'
         Font.Style = []
         ParentFont = False
-        TabOrder = 3
+        TabOrder = 2
         OnClick = createFileClick
-        ExplicitLeft = 719
-        ExplicitTop = 65
       end
       object btnExit: TButton
-        Left = 721
-        Top = 321
+        Left = 719
+        Top = 300
         Width = 209
         Height = 49
         Anchors = []
@@ -22302,15 +22286,13 @@ object MainForm: TMainForm
         Font.Name = 'Segoe UI'
         Font.Style = []
         ParentFont = False
-        TabOrder = 4
+        TabOrder = 3
         OnClick = btnExitClick
-        ExplicitLeft = 719
-        ExplicitTop = 316
       end
       object ExitSave: TButton
         Tag = 1
-        Left = 721
-        Top = 399
+        Left = 719
+        Top = 385
         Width = 209
         Height = 49
         Anchors = []
@@ -22321,10 +22303,8 @@ object MainForm: TMainForm
         Font.Name = 'Segoe UI'
         Font.Style = []
         ParentFont = False
-        TabOrder = 5
+        TabOrder = 4
         OnClick = btnExitClick
-        ExplicitLeft = 719
-        ExplicitTop = 393
       end
     end
     object PageCreateByPattern: TTabSheet
@@ -22383,7 +22363,7 @@ object MainForm: TMainForm
           Width = 183
           Height = 48
           Align = alCustom
-          Caption = #1089#1086#1093#1088#1072#1085#1080#1090#1100
+          Caption = 'BtnDelOrSave'
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -21
@@ -22392,6 +22372,22 @@ object MainForm: TMainForm
           ParentFont = False
           TabOrder = 2
           OnClick = GoBackMenuClick
+        end
+        object btnChoose: TButton
+          Tag = 2
+          Left = 0
+          Top = 217
+          Width = 183
+          Height = 48
+          Action = ChoosePattern
+          Align = alCustom
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -21
+          Font.Name = 'Segoe UI'
+          Font.Style = []
+          ParentFont = False
+          TabOrder = 3
         end
       end
       object ScrollBoxPattern: TScrollBox
@@ -22572,7 +22568,6 @@ object MainForm: TMainForm
           Font.Style = []
           ParentFont = False
           TabOrder = 1
-          OnClick = ChooseDataClick
         end
         object LearntSubject: TButton
           Tag = 2
@@ -22582,7 +22577,6 @@ object MainForm: TMainForm
           Height = 137
           Caption = 'LearntSubject'
           TabOrder = 0
-          OnClick = ChooseDataClick
         end
         object Student: TButton
           Tag = 3
@@ -22592,7 +22586,6 @@ object MainForm: TMainForm
           Height = 137
           Caption = 'Student'
           TabOrder = 2
-          OnClick = ChooseDataClick
         end
         object Group: TButton
           Left = 632
@@ -22601,7 +22594,6 @@ object MainForm: TMainForm
           Height = 137
           Caption = 'Group'
           TabOrder = 3
-          OnClick = ChooseDataClick
         end
         object Specialty: TButton
           Left = 128
@@ -22610,7 +22602,6 @@ object MainForm: TMainForm
           Height = 137
           Caption = 'Specialty'
           TabOrder = 4
-          OnClick = ChooseDataClick
         end
         object LearntForm: TButton
           Left = 328
@@ -22619,7 +22610,6 @@ object MainForm: TMainForm
           Height = 137
           Caption = 'LearntForm'
           TabOrder = 6
-          OnClick = ChooseDataClick
         end
         object Faculty: TButton
           Left = 536
@@ -22628,7 +22618,6 @@ object MainForm: TMainForm
           Height = 137
           Caption = 'Faculty'
           TabOrder = 5
-          OnClick = ChooseDataClick
         end
       end
     end
@@ -22642,6 +22631,10 @@ object MainForm: TMainForm
       Caption = #1059#1076#1072#1083#1080#1090#1100
       ShortCut = 46
     end
+    object ChoosePattern: TAction
+      Category = 'Pattern'
+      Caption = #1042#1099#1073#1088#1072#1090#1100
+    end
     object AddData: TAction
       Category = 'data'
       Caption = #1044#1086#1073#1072#1074#1080#1090#1100
@@ -22654,12 +22647,36 @@ object MainForm: TMainForm
       Category = 'data'
       Caption = #1076#1086#1087' '#1080#1085#1092#1086
     end
+    object ActSavePattern: TAction
+      Category = 'Pattern'
+      Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100
+    end
+    object ActSaveAs: TAction
+      Category = 'Pattern'
+      Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100' '#1082#1072#1082
+    end
+    object ActAddPattern: TAction
+      Category = 'Pattern'
+      Caption = #1044#1086#1073#1072#1074#1080#1090#1100
+    end
+    object ActDelPattern: TAction
+      Category = 'Pattern'
+      Caption = #1059#1076#1072#1083#1080#1090#1100
+    end
   end
   object ODPattern: TOpenDialog
     DefaultExt = 'txt'
     Filter = 'Text files (*.txt)|*.txt'
     Options = [ofFileMustExist, ofEnableSizing]
     Left = 612
+    Top = 518
+  end
+  object FileODPattern: TFileOpenDialog
+    FavoriteLinks = <>
+    FileTypes = <>
+    Options = [fdoNoChangeDir, fdoPickFolders, fdoPathMustExist]
+    Title = #1042#1099#1073#1077#1088#1080#1090#1077' '#1087#1072#1087#1082#1091
+    Left = 532
     Top = 518
   end
 end

@@ -10,17 +10,22 @@ procedure createOutFile(words: SPArr);
 
 implementation
 
-uses Vcl.StdCtrls, mainCodeForm, Vcl.Controls, Vcl.Graphics, Vcl.ExtCtrls, DataBase;
+uses Vcl.StdCtrls, mainCodeForm, Vcl.Controls, Vcl.Graphics, Vcl.ExtCtrls,
+     DataBase, ActionsPattern, Vcl.ComCtrls, Classes, Windows;
 
 procedure CreateObjectPattern();
 const
   basicColorPanel: TColor = clCream;
+  LVS_NOCOLUMNHEADER = $4000;
 var
   btn: TButton;
   lbl: TLabel;
   i, width: integer;
+  LV: TListView;
+  item: TListItem;
+  collum: TListColumn;
+  Style: LongInt;
 begin
-
   lbl:= TLabel.Create(MainForm.ScrollBoxPattern);
   lbl.Parent:= MainForm.ScrollBoxPattern;
   lbl.Caption:= 'Выберите 1 из сохранённых шаблонов:';
@@ -29,7 +34,34 @@ begin
   lbl.Top:= 10;
   lbl.Height:= 40;
 
-  i:= 0;
+  LV:= TlistView.Create(MainForm.ScrollBoxPattern);
+  with LV do begin
+    name:= 'LVPattern';
+    Parent:= MainForm.ScrollBoxPattern;
+    Left:= 0;
+    Top:= 60;
+    Width:= MainForm.ScrollBoxPattern.ClientWidth;
+    Height:= MainForm.ScrollBoxPattern.ClientHeight-60;
+    ViewStyle := vsReport;
+    RowSelect := True;
+    GridLines:= true;
+    Font.Size:= 14;
+    collum:= columns.Add;
+    collum.Alignment:= taCenter;
+    collum.Width:= -2;
+    collum.Caption:= '';
+
+    for I := Low(arrPattern) to High(arrPattern) do begin
+      item:= Items.Add();
+      item.Caption:= Copy(arrPattern[i], 0, Length(arrPattern[i]) - 4);
+    end;
+  end;
+
+  // Скрыть заголовок
+  Style := GetWindowLong(LV.Handle, GWL_STYLE);
+  SetWindowLong(LV.Handle, GWL_STYLE, Style or LVS_NOCOLUMNHEADER);
+
+  {i:= 0;
   width:= MainForm.ScrollBoxPattern.ClientWidth - 40;
   while (arrPattern[i] <> '') do
   begin
@@ -40,9 +72,9 @@ begin
     Btn.Width:= width;
     Btn.Height:= 40;
     Btn.Caption:= arrPattern[i];
-    Btn.OnClick:= MainForm.PatternButtonAction;
+    Btn.OnClick:= PatternActions.ActChoosePattern;
     inc(i);
-  end;
+  end;}
 end;
 
 procedure createEditPattern(var Top, Width: integer; hint: string);
@@ -56,7 +88,7 @@ begin
   myEdit.Width:= width;
   myEdit.Height:= 40;
   myEdit.TextHint:= 'Введите ' + hint;
-  myEdit.Name:= hint;
+  //myEdit.Name:= hint;
   myEdit.Text:= '';
   inc(top, 45);
 end;
@@ -72,7 +104,7 @@ var
   btn: TButton;
   panel: TPanel;
   top, width: integer;
-  neadHourCredits: boolean;
+  neadHourCredits, neadInitzial: boolean;
   NeadString: array[0..ngw2] of boolean;
 begin
   Btn:= TButton.Create(MainForm.ScrollBoxPattern);
@@ -82,13 +114,14 @@ begin
   Btn.Width:= 200;
   Btn.Height:= 40;
   btn.Caption:= 'готово';
-  btn.OnClick:= MainForm.ReadyButtonClick;
+  btn.OnClick:= PatternActions.ReadyButtonClick;
 
   for var i := Low(NeadString) to High(NeadString) do NeadString[i]:= true;
 
   top:= 65;
   width:= MainForm.ScrollBoxPattern.ClientWidth - 40;
   neadHourCredits:= false;
+  neadInitzial:= false;
   for var i:= Low(arr) to High(arr) do begin
     for var j:= Low(WordsFirst) to High(WordsFirst) do begin
       if (arr[i].text = WordsFirst[j]) then begin
@@ -105,15 +138,26 @@ begin
       end;
     end;
 
+    if (arr[i].text = 'часов') or (arr[i].text = 'зачедин') then
+      neadHourCredits:= true;
+    if (arr[i].text = 'инициалы') then neadInitzial:= true;
+
+  end;
+                          //тогда есть фио
+  if (neadInitzial) and (NeadString[0]) then begin
+    NeadString[0]:= false;
+    createEditPattern(Top, Width, 'имя');
+    createEditPattern(Top, Width, 'фамилия');
+    createEditPattern(Top, Width, 'отчество');
+  end;
+
+  for var i:= Low(arr) to High(arr) do begin
     for var j:= Low(WordsSecond) to High(WordsSecond) do begin
       if (arr[i].text = WordsSecond[j]) and (NeadString[j]) then begin
         createEditPattern(Top, Width, arr[i].text);
         NeadString[j]:= false;
       end;
     end;
-
-    if (arr[i].text = 'часов') or (arr[i].text = 'зачедин') then
-      neadHourCredits:= true;
   end;
 
   if (NeadString[0]) then createEditPattern(Top, Width, 'группа');
@@ -165,8 +209,11 @@ begin
   //create TEdit
   memo:= TMemo.Create(MainForm.ScrollBoxPattern);
   memo.parent:= MainForm.ScrollBoxPattern;
+  memo.Name:= 'UserMemoFile';
+  memo.TextHint:= fileNameNow;
   memo.Text:= text;
   memo.Align:= alClient;
+  memo.ScrollBars:= TScrollStyle.ssVertical;
 end;
 
 end.

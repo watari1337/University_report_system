@@ -30,6 +30,7 @@ begin
       FindClose(searchResult);
     end;
   end;
+  SetLength(result, i);
 end;
 
 Procedure loadFileTTeacher();
@@ -155,4 +156,3 @@ begin
 end;
 
 end.
-

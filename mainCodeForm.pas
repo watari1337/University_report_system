@@ -9,7 +9,7 @@ uses
   DataBase, BasicFunction, Pattern, DataCreate,
   Vcl.ComCtrls, System.Actions,
   Vcl.ActnList, Vcl.Buttons, Vcl.Samples.Spin, ULoadData, SaveData, WorkWithData,
-  PatternShow;
+  PatternShow, ActionsPattern;
 
 type
   TMainForm = class(TForm)
@@ -17,7 +17,6 @@ type
     ChangeData: TButton;
     btnExit: TButton;
     Test: TButton;
-    changePattern: TButton;
     PageControl1: TPageControl;
     PageMenu: TTabSheet;
     PageCreateByPattern: TTabSheet;
@@ -55,18 +54,21 @@ type
     actShowExtraInfo: TAction;
     BtnSaveAsOrAdd: TButton;
     BtnDelOrSave: TButton;
-    procedure ReadyButtonClick(Sender: TObject);
+    btnChoose: TButton;
+    ChoosePattern: TAction;
+    ActSavePattern: TAction;
+    ActSaveAs: TAction;
+    ActAddPattern: TAction;
+    ActDelPattern: TAction;
+    FileODPattern: TFileOpenDialog;
     procedure TestClick(Sender: TObject);
     procedure btnExitClick(Sender: TObject);
     procedure createFileClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure GoBackMenuClick(Sender: TObject);
-    procedure PatternButtonAction(sender: TObject);
-    procedure ChooseDataClick(Sender: TObject);
-    procedure ChangeDataClick(Sender: TObject);
     procedure LVShowDataData(Sender: TObject; Item: TListItem);
-    procedure changePatternClick(Sender: TObject);
     procedure ActionList1Update(Action: TBasicAction; var Handled: Boolean);
+    procedure ChangeDataClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -86,7 +88,30 @@ procedure TMainForm.ActionList1Update(Action: TBasicAction;
   var Handled: Boolean);
 var
   status: boolean;
+  LV: TListView;
+  obj: TObject;
 begin
+  if (statusPattern = 1) then begin //выбор паттерна
+    obj:= MainForm.ScrollBoxPattern.FindComponent('LVPattern');
+    ActDelPattern.Enabled:= Assigned(obj) and (obj is TListView) and ((obj as TListView).ItemIndex <> -1);
+    ChoosePattern.Enabled:= ActDelPattern.Enabled;
+
+    BtnSaveAsOrAdd.Action:= ActAddPattern;
+    BtnDelOrSave.Action:= ActDelPattern;
+    btnChoose.action:= ChoosePattern;
+  end
+  else if (statusPattern = 2) then begin
+
+    BtnSaveAsOrAdd.Action:= ActSaveAs;
+    BtnDelOrSave.Action:= ActSavePattern;
+  end
+  else begin
+    BtnSaveAsOrAdd.Visible:= false;
+    BtnDelOrSave.Visible:= false;
+    btnChoose.Visible:= false;
+  end;
+
+
   if (PageControl1.ActivePageIndex = 3) then begin
 
     if (LVShowData.Tag = -1) then begin
@@ -118,61 +143,6 @@ begin
   Handled:= true; //обработка сделана мной, дальше не надо
 end;
 
-procedure TMainForm.ChangeDataClick(Sender: TObject);
-begin
-  PageControl1.ActivePageIndex:= 4;
-end;
-
-procedure ClearScrolBox(myBox: TScrollBox);
-begin
-  for var i:= 0 to myBox.ControlCount-1 do begin
-    myBox.Controls[0].Free;
-  end;
-end;
-
-procedure TMainForm.changePatternClick(Sender: TObject);
-var
-  sourc, dest: string;
-begin
-  if ODPattern.Execute() then begin
-    sourc:= ODPattern.FileName;
-    dest:= ExtractFilePath(ParamStr(0));
-    dest:= dest + 'Pattern\' + ExtractFileName(sourc);
-    //false перезаписать если такой файл уже есть true не перезаписывать 
-    if CopyFile(PChar(sourc), PChar(dest), true) then begin
-      showMessage('Файл успешно скопирован!');
-      reLoadPattern();
-    end
-    else showMessage(SysErrorMessage(GetLastError));
-  end;
-end;
-
-procedure TMainForm.ChooseDataClick(Sender: TObject);
-begin
-  MoreData.Visible:= false;
-  LVShowData.Tag:= -1;
-  case (Sender as TButton).TabOrder of
-    0: objTLearntSubject.createPageShowList;
-    1: objTTeacher.createPageShowList;
-    2: objTStudent.createPageShowList;
-    3: begin
-      objTGroup.createPageShowList;
-      MoreData.Visible:= true;
-      MoreData.Caption:= 'расписание';
-    end;
-    4: objTSpecialty.createPageShowList;
-    5: objTFaculty.createPageShowList;
-    6: objTLearntForm.createPageShowList;
-  end;
-  workObjNow:= TallType((Sender as TButton).TabOrder);
-  PageControl1.ActivePageIndex:= 3;  //Data changes/show
-end;
-
-procedure TurnOnForm(formNow: TForm);
-begin
-  formNow.Show;
-end;
-
 procedure TMainForm.TestClick(Sender: TObject);
 begin
   createData();
@@ -182,6 +152,8 @@ procedure TMainForm.createFileClick(Sender: TObject);
 begin
   CreateObjectPattern();
   PageControl1.ActivePageIndex:= 1;
+  statusPattern:= 1;
+  ActionList1.UpdateAction(ChoosePattern);
 end;
 
 procedure TMainForm.btnExitClick(Sender: TObject);
@@ -199,6 +171,11 @@ begin
   objTFaculty.Free;
 
   MainForm.Close;
+end;
+
+procedure TMainForm.ChangeDataClick(Sender: TObject);
+begin
+  PageControl1.ActivePageIndex:= 4;
 end;
 
 procedure TMainForm.GoBackMenuClick(Sender: TObject);
@@ -249,38 +226,16 @@ begin
   end;
 end;
 
-//from your choose pattern create page with ask words for pattern
-procedure TMainForm.PatternButtonAction(sender: TObject);
-begin
-  fileNameNow:= (sender as Tbutton).Caption;
-  findWords:= ListOfWords(fileNameNow);
-  ClearScrolBox(ScrollBoxPattern);
-  if (length(findWords) > 0) then CreateAskTexBox(findWords)
-  else begin
-    ClearScrolBox(ScrollBoxPattern);
-    createOutFile(findWords);
-  end;
-
-end;
-
-procedure TMainForm.ReadyButtonClick(Sender: TObject);
-begin
-  getWords:= ReadAnswer();
-  FindGroup();
-  if (checkEdit()) then begin
-
-    MakeWords(findWords, getWords);
-    ClearScrolBox(ScrollBoxPattern);
-    createOutFile(findWords);
-  end;
-end;
-
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
   if (DirectoryExists('Data\') = false) then CreateDir('Data\');
   if (DirectoryExists('Pattern\') = false) then CreateDir('Pattern\');
-  
+  if (DirectoryExists('Pattern\Delete\') = false) then CreateDir('Pattern\Delete\');
+  if (DirectoryExists('Pattern\Result\') = false) then CreateDir('Pattern\Result\');
 
+  FileODPattern.DefaultFolder:= ExtractFilePath(ParamStr(0));
+
+  statusPattern:= 0;
   PageControl1.ActivePageIndex:= 0;
   loadDataFile();
 
@@ -289,6 +244,20 @@ begin
   addData.OnExecute:= Actions.MyActions.ActAddData;
   editData.OnExecute:= Actions.MyActions.ActEditData;
   actShowExtraInfo.OnExecute:= Actions.MyActions.ActShowExtraData;
+
+  ChoosePattern.OnExecute:= PatternActions.ActChoosePattern;
+  ActSavePattern.OnExecute:= PatternActions.ActSave;
+  ActSaveAs.OnExecute:= PatternActions.ActSaveAs;
+  ActDelPattern.OnExecute:= PatternActions.ActDeletePattern;
+  ActAddPattern.OnExecute:= PatternActions.ActAddPattern;
+
+  Teacher.OnClick:= MyActions.ChooseDataClick;
+  LearntSubject.OnClick:= MyActions.ChooseDataClick;
+  Student.OnClick:= MyActions.ChooseDataClick;
+  Group.OnClick:= MyActions.ChooseDataClick;
+  Specialty.OnClick:= MyActions.ChooseDataClick;
+  LearntForm.OnClick:= MyActions.ChooseDataClick;
+  Faculty.OnClick:= MyActions.ChooseDataClick;
 end;
 
 end.

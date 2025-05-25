@@ -9,6 +9,7 @@ type
     class procedure ActEditData(Sender: TObject);
     class procedure ActShowExtraData(Sender: TObject);
     class procedure CheckData(Sender: TObject);
+    class procedure ChooseDataClick(Sender: TObject);
   end;
 
 implementation
@@ -30,9 +31,9 @@ end;
 function checkDataSpin(spin: TSpinEdit): boolean;
 begin
   result:= true;
-  if (spin.Value = 0) then result:= false
+  //if (spin.Value = 0) then result:= false
 
-  else if (workObjNow = Student) and (spin.Tag = 2) //enter group in list of group
+  if (workObjNow = Student) and (spin.Tag = 2) //enter group in list of group
   and (objTGroup.CheckAny(spin.Value, 0) = false)
     then result:= false
 
@@ -207,27 +208,6 @@ begin
   FrmAddEditElement.Height:= maxHeight + 2*shiftHeight + 35; //150 кнопки добавить или отменить
 end;
 
-procedure GenerCodeHint(var controlCode: Iarr; var hint: SArr);
-begin
-  if (MainForm.LVShowData.tag = -1) then begin
-    case workObjNow of  //0 nothing, 1 numberInput, 2 stringInput
-      Teacher: controlCode:= [0, 2, 2, 2, 2];
-      LearntSubject: controlCode:= [0, 2];
-      Student: controlCode:= [0, 1, 1, 2, 2, 2];
-      Group: controlCode:= [1, 0, 0];
-      Specialty: controlCode:= [0, 1, 2];
-      LearntForm: controlCode:= [0, 2];
-      Faculty: controlCode:= [0, 2, 2, 2, 2];
-    end;
-  end
-  else begin
-    case workObjNow of
-      Group: controlCode:= [0, 1, 1, 1, 1];
-    end;
-  end;
-  hint:= makeTitle(workObjNow);
-end;
-
 function FromFrameToVarArr(): varArr;
 var
   control: TControl;
@@ -376,6 +356,29 @@ begin
 
     Selected:= nil;
     Invalidate;
+  end;
+end;
+
+class procedure MyActions.ChooseDataClick(Sender: TObject);
+begin
+  with MainForm do begin
+    MoreData.Visible:= false;
+    LVShowData.Tag:= -1;
+    case (Sender as TButton).TabOrder of
+      0: objTLearntSubject.createPageShowList;
+      1: objTTeacher.createPageShowList;
+      2: objTStudent.createPageShowList;
+      3: begin
+        objTGroup.createPageShowList;
+        MoreData.Visible:= true;
+        MoreData.Caption:= 'расписание';
+      end;
+      4: objTSpecialty.createPageShowList;
+      5: objTFaculty.createPageShowList;
+      6: objTLearntForm.createPageShowList;
+    end;
+    workObjNow:= TallType((Sender as TButton).TabOrder);
+    PageControl1.ActivePageIndex:= 3;  //Data changes/show
   end;
 end;
 

@@ -12,7 +12,8 @@ uses
   WorkWithData in 'WorkWithData.pas',
   ULoadData in 'ULoadData.pas',
   SaveData in 'SaveData.pas',
-  PatternShow in 'PatternShow.pas';
+  PatternShow in 'PatternShow.pas',
+  ActionsPattern in 'ActionsPattern.pas';
 
 {$R *.res}
 

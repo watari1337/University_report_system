@@ -140,6 +140,7 @@
         <DCCReference Include="ULoadData.pas"/>
         <DCCReference Include="SaveData.pas"/>
         <DCCReference Include="PatternShow.pas"/>
+        <DCCReference Include="ActionsPattern.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>

@@ -5,6 +5,7 @@ interface
 function ReadInt(min, max: integer): integer;
 procedure ReadRusStr(var str: string);
 procedure LowerRus(var s1: String);
+function FLowerRus(s1: String): String;
 //procedure QuickSort(var arr: array of TPair);
 
 implementation
@@ -108,6 +109,20 @@ begin
     if (s1[i] >= 'А') and (s1[i] <= 'Я') then
       s1[i] := Chr(Ord(s1[i])+32)
   end;
+end;
+
+function FLowerRus(s1: String): String;
+var
+  len, i: Integer;
+begin
+  s1:= trim(s1);
+  len := Length(s1);
+  for i := 1 to len do
+  begin
+    if (s1[i] >= 'А') and (s1[i] <= 'Я') then
+      s1[i] := Chr(Ord(s1[i])+32)
+  end;
+  result:= s1;
 end;
 
 procedure BiggerRus(var s1: String);

@@ -5,6 +5,7 @@ interface
 uses DataBase;
 
 function makeTitle(listType: TAllType): Sarr;
+procedure GenerCodeHint(var controlCode: Iarr; var hint: SArr);
 procedure PushListT(element: VarArr);
 function findGroupByName(FirstName, SecondName, ThirdName: string): integer;
 function GetArrDataFromGroup(id: integer): PArrSbjTch;
@@ -16,7 +17,7 @@ procedure EditData(group, index: integer; inf: varArr);
 
 implementation
 
-uses mainCodeForm;
+uses mainCodeForm, BasicFunction;
 
 //среди всех групп ищет элемент равный id в колонце collume
 function findGroupArr(id: variant; collum: integer): IPairArr;
@@ -160,9 +161,9 @@ begin
   node:= objTStudent.headList^.Next;
   result:= -1;
   while (node <> nil) do begin
-    if  (FirstName = node^.inf.FirstName)
-    and (SecondName = node^.inf.SecondName)
-    and (ThirdName = node^.inf.ThirdName) then begin   //3 имя
+    if  (FLowerRus(FirstName) = FLowerRus(node^.inf.FirstName))
+    and (FLowerRus(SecondName) = FLowerRus(node^.inf.SecondName))
+    and (FLowerRus(ThirdName) = FLowerRus(node^.inf.ThirdName)) then begin   //3 имя
       result:= node^.inf.group;
       break;
     end;
@@ -188,6 +189,27 @@ begin
       Group: result:= ['номер', 'id предмета','id учителя','часов', 'credits'];
     end;
   end;
+end;
+
+procedure GenerCodeHint(var controlCode: Iarr; var hint: SArr);
+begin
+  if (MainForm.LVShowData.tag = -1) then begin
+    case workObjNow of  //0 nothing, 1 numberInput, 2 stringInput
+      Teacher: controlCode:= [0, 2, 2, 2, 2];
+      LearntSubject: controlCode:= [0, 2];
+      Student: controlCode:= [0, 1, 1, 2, 2, 2];
+      Group: controlCode:= [1, 0, 0];
+      Specialty: controlCode:= [0, 1, 2];
+      LearntForm: controlCode:= [0, 2];
+      Faculty: controlCode:= [0, 2, 2, 2, 2];
+    end;
+  end
+  else begin
+    case workObjNow of
+      Group: controlCode:= [0, 1, 1, 1, 1];
+    end;
+  end;
+  hint:= makeTitle(workObjNow);
 end;
 
 
