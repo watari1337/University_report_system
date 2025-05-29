@@ -111,7 +111,6 @@ begin
     btnChoose.Visible:= false;
   end;
 
-
   if (PageControl1.ActivePageIndex = 3) then begin
 
     if (LVShowData.Tag = -1) then begin
@@ -191,6 +190,7 @@ var
   element: VarArr;
   arrGroup: TArrSbjTch;
   arrElement: TSbjTeacher;
+  str: string;
 begin
   if (sender is TListview) then begin
     if (sender as TListview).Tag = -1 then begin //show list
@@ -218,7 +218,12 @@ begin
 
       item.Caption:= intToStr(arrElement.id);
       item.SubItems.Add(intToStr(arrElement.sbj));
+      item.SubItems.Add(objTLearntSubject.FindAny(arrElement.sbj, 0, 1));
       item.SubItems.Add(intToStr(arrElement.teacher));
+      str:= objTTeacher.FindAny(arrElement.teacher, 0, 3) + ' ' +
+      objTTeacher.FindAny(arrElement.teacher, 0, 2) + ' ' +
+      objTTeacher.FindAny(arrElement.teacher, 0, 4);
+      item.SubItems.Add(str);
       //item.SubItems.Add(intToStr(arrElement.typeSbj));
       item.SubItems.Add(intToStr(arrElement.hour));
       item.SubItems.Add(intToStr(arrElement.credits));

@@ -18,7 +18,7 @@ object MainForm: TMainForm
     Top = 0
     Width = 1010
     Height = 590
-    ActivePage = PageCreateByPattern
+    ActivePage = PageMenu
     Align = alClient
     TabOrder = 0
     ExplicitWidth = 1008
@@ -22245,20 +22245,23 @@ object MainForm: TMainForm
         Font.Style = []
         ParentFont = False
         TabOrder = 0
+        Visible = False
         OnClick = TestClick
       end
       object ChangeData: TButton
-        Left = 719
-        Top = 215
+        Left = 720
+        Top = 214
         Width = 209
         Height = 49
         Anchors = []
         Caption = #1041#1072#1079#1072' '#1076#1072#1085#1085#1099#1093
         TabOrder = 1
         OnClick = ChangeDataClick
+        ExplicitLeft = 718
+        ExplicitTop = 211
       end
       object createFile: TButton
-        Left = 719
+        Left = 720
         Top = 131
         Width = 209
         Height = 49
@@ -22272,10 +22275,12 @@ object MainForm: TMainForm
         ParentFont = False
         TabOrder = 2
         OnClick = createFileClick
+        ExplicitLeft = 718
+        ExplicitTop = 129
       end
       object btnExit: TButton
-        Left = 719
-        Top = 300
+        Left = 720
+        Top = 299
         Width = 209
         Height = 49
         Anchors = []
@@ -22288,11 +22293,13 @@ object MainForm: TMainForm
         ParentFont = False
         TabOrder = 3
         OnClick = btnExitClick
+        ExplicitLeft = 718
+        ExplicitTop = 295
       end
       object ExitSave: TButton
         Tag = 1
-        Left = 719
-        Top = 385
+        Left = 720
+        Top = 386
         Width = 209
         Height = 49
         Anchors = []
@@ -22305,6 +22312,8 @@ object MainForm: TMainForm
         ParentFont = False
         TabOrder = 4
         OnClick = btnExitClick
+        ExplicitLeft = 718
+        ExplicitTop = 380
       end
     end
     object PageCreateByPattern: TTabSheet
@@ -22320,8 +22329,6 @@ object MainForm: TMainForm
         Color = clCream
         ParentBackground = False
         TabOrder = 0
-        ExplicitLeft = 815
-        ExplicitHeight = 572
         object GoBackMenu: TButton
           Tag = 2
           Left = 1
@@ -22397,8 +22404,6 @@ object MainForm: TMainForm
         Height = 580
         Align = alClient
         TabOrder = 1
-        ExplicitWidth = 815
-        ExplicitHeight = 572
       end
     end
     object FileTextOut: TTabSheet

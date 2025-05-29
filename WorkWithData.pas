@@ -55,9 +55,9 @@ begin
   arr:= GetArrDataFromGroup(group);
   item.id:= index+1;
   item.sbj:= inf[1];
-  item.teacher:= inf[2];
-  item.hour:= inf[3];
-  item.credits:= inf[4];
+  item.teacher:= inf[3];
+  item.hour:= inf[5];
+  item.credits:= inf[6];
   arr^[index]:= item;
 
   MainForm.LVShowData.SetFocus;
@@ -75,9 +75,9 @@ begin
   elements:= objTGroup.FindAny(group, 0, 2); //кнопка не рабоатет если элементов слишком много
   item.id:= elements+1;
   item.sbj:= inf[1];
-  item.teacher:= inf[2];
-  item.hour:= inf[3];
-  item.credits:= inf[4];
+  item.teacher:= inf[3];
+  item.hour:= inf[5];
+  item.credits:= inf[6];
   arr^[elements]:= item;
   inc(elements);
   objTGroup.WriteAny(group, 0, 2, elements);
@@ -101,7 +101,7 @@ begin
   end;
   objTGroup.WriteAny(group, 0, 2, elements);
 
-  if (MainForm.LVShowData.tag = -1) and (workObjNow = TAllType(3)) then begin
+  if (MainForm.LVShowData.tag <> -1) and (workObjNow = TAllType(3)) then begin
     MainForm.LVShowData.Items.Count:= MainForm.LVShowData.Items.Count-1;
     MainForm.LVShowData.SetFocus;
     MainForm.LVShowData.Invalidate;
@@ -186,7 +186,7 @@ begin
   end
   else begin
     case listType of
-      Group: result:= ['номер', 'id предмета','id учителя','часов', 'credits'];
+      Group: result:= ['номер', 'id предмета', 'название', 'id учителя', 'название','часов', 'credits'];
     end;
   end;
 end;
@@ -206,7 +206,7 @@ begin
   end
   else begin
     case workObjNow of
-      Group: controlCode:= [0, 1, 1, 1, 1];
+      Group: controlCode:= [0, 1, 0, 1, 0, 1, 1];
     end;
   end;
   hint:= makeTitle(workObjNow);

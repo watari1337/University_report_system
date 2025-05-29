@@ -182,8 +182,8 @@ begin
       else if words[i].text = 'спец' then
         str:= objTSpecialty.Read1(GetIdFromGroup(2, groupId), 2)
       else if words[i].text = 'деканд' then
-        str:= objTFaculty.Read1(GetIdFromGroup(1, groupId), 2) +
-        ' ' + objTFaculty.Read1(GetIdFromGroup(1, groupId), 3) +
+        str:= objTFaculty.Read1(GetIdFromGroup(1, groupId), 3) +
+        ' ' + objTFaculty.Read1(GetIdFromGroup(1, groupId), 2) +
         ' ' + objTFaculty.Read1(GetIdFromGroup(1, groupId), 4)
       else if words[i].text = 'формаобучения' then
         str:= objTLearntForm.Read1(GetIdFromGroup(3, groupId), 1)
@@ -212,8 +212,8 @@ begin
         num:= objTLearntSubject.FindAny( GetElementUserWords('предмет', userWords), 1, 0);
         num:= takeFromArrGroup(2, num, 1, groupId);
         str:= objTTeacher.Read1(num, 1);
-        str:= str + ' ' + objTTeacher.Read1(num, 2) +
-        ' ' + objTTeacher.Read1(num, 3) +
+        str:= str + ' ' + objTTeacher.Read1(num, 3) +
+        ' ' + objTTeacher.Read1(num, 2) +
         ' ' + objTTeacher.Read1(num, 4);
       end
       else if words[i].text = 'предмет' then begin    //ищем предмет тогда знаем пфио
@@ -242,8 +242,8 @@ begin
         end;
       end
       else if words[i].text = 'группафио' then begin
-        arr1:= objTStudent.FilterAny(groupId, 2, 3);
-        arr2:= objTStudent.FilterAny(groupId, 2, 4); //фамилия
+        arr1:= objTStudent.FilterAny(groupId, 2, 4); //фамилия
+        arr2:= objTStudent.FilterAny(groupId, 2, 3);
         arr3:= objTStudent.FilterAny(groupId, 2, 5);
         for var j := Low(arr1) to High(arr1) do begin
           str:= str + intToStr(j+1) + '         ' + arr2[j] +
@@ -251,12 +251,13 @@ begin
         end;
       end
       else if words[i].text = 'фио' then begin
-        str:= GetElementUserWords('имя', userWords) + ' ' +
-        GetElementUserWords('фамилия', userWords) + ' ' +
+        str:= GetElementUserWords('фамилия', userWords) + ' ' +
+        GetElementUserWords('имя', userWords) + ' ' +
         GetElementUserWords('отчество', userWords);
       end
       else if words[i].text = 'инициалы' then begin
-        str:= GetElementUserWords('имя', userWords)[1] + '. ' +
+        str:= GetElementUserWords('фамилия', userWords) + ' ' +
+        GetElementUserWords('имя', userWords)[1] + '. ' +
         GetElementUserWords('отчество', userWords)[1] + '.';
       end;
 

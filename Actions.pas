@@ -44,12 +44,12 @@ begin
   or (objTLearntForm.CheckAny( GetIdFromGroup(3, spin.Value), 0) = false))
     then result:= false
 
-  else if (workObjNow = Group) and (MainForm.LVShowData.Tag <> -1)  //предмет в рассписании группы существует
+  else if (workObjNow = Group) and (MainForm.LVShowData.Tag <> -1)  //предмет в рассписании группы существует?
   and (spin.Tag = 1) and (objTLearntSubject.CheckAny( spin.Value, 0) = false)
     then result:= false
 
-  else if (workObjNow = Group) and (MainForm.LVShowData.Tag <> -1)  //препод в рассписании группы существует
-  and (spin.Tag = 2) and (objTTeacher.CheckAny( spin.Value, 0) = false)
+  else if (workObjNow = Group) and (MainForm.LVShowData.Tag <> -1)  //препод в рассписании группы существует?
+  and (spin.Tag = 3) and (objTTeacher.CheckAny( spin.Value, 0) = false)
     then result:= false
 
   else if (workObjNow = Specialty) and (spin.Tag = 1)
@@ -122,9 +122,10 @@ var
   btn: TButton;
   spin: TSpinEdit;
   edit: TEdit;
+  lable: Tlabel;
   captions: SArr;
   baseWidth, baseHeight, widthNow, HeightNow, shiftWidth1, shiftWidth2,
-  shiftHeight, maxWidth, maxHeight: integer;
+  shiftHeight, maxWidth, maxHeight, hieghLable: integer;
 begin
   //free Form
   for var I := (FrmAddEditElement.PnEdit.ComponentCount-1) downto 0 do
@@ -132,22 +133,24 @@ begin
   for var I := (FrmAddEditElement.PnExit.ComponentCount-1) downto 0 do
     FrmAddEditElement.PnExit.Components[i].Free;
 
+  hieghLable:= 20;
   baseWidth:= 250;
   baseHeight:= 60;
   shiftWidth1:= 30;
   shiftWidth2:= 60;
-  shiftHeight:= baseHeight + 20;
+  shiftHeight:= baseHeight + 20 + hieghLable + 5;
   widthNow:= shiftWidth1;
   HeightNow:= 20;
   FrmAddEditElement.Width:= 2*(baseWidth + shiftWidth1) + shiftWidth2;
 
   for var i:= Low(controlCode) to High(controlCode) do begin
+
     if (controlCode[i] = 1) then begin
       spin:= TSpinEdit.Create(FrmAddEditElement.PnEdit);
       spin.parent:= FrmAddEditElement.PnEdit;
       spin.AutoSize:= false;
       spin.Left:= widthNow;
-      spin.Top:= heightNow;
+      spin.Top:= heightNow + hieghLable + 5;
       spin.Width:= baseWidth;
       spin.Height:= baseHeight;
       spin.Font.Size:= 18;
@@ -163,7 +166,7 @@ begin
       edit.parent:= FrmAddEditElement.PnEdit;
       edit.AutoSize:= false;
       edit.Left:= widthNow;
-      edit.Top:= heightNow;
+      edit.Top:= heightNow + hieghLable + 5;
       edit.Width:= baseWidth;
       edit.Height:= baseHeight;
       edit.Font.Size:= 14;
@@ -175,6 +178,13 @@ begin
     end;
 
     if (controlCode[i] <> 0) then begin
+      lable:= Tlabel.Create(FrmAddEditElement.PnEdit);
+      lable.parent:= FrmAddEditElement.PnEdit;
+      lable.Left:= widthNow;
+      lable.Top:= heightNow-12;
+      lable.Caption:= hint[i];
+      lable.Font.size:= 14;
+
       maxHeight:= heightNow;
       inc(widthNow, baseWidth + shiftWidth2);
       if (widthNow >  FrmAddEditElement.Width - baseWidth - shiftWidth1) then begin
@@ -339,7 +349,7 @@ begin
       Items.Count:= objTGroup.ReadT( objTGroup.Find(tag))[2];
 
       titles:= makeTitle(workObjNow);
-      widths:= [90, 90, 90, 90, 90];
+      widths:= [90, 90, 150, 90, 220, 90, 90];
       Columns.Clear;
       for var i:= 0 to length(titles)-1 do begin
         col:= Columns.Add;
