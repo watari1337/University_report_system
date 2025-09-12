@@ -194,7 +194,11 @@ end;
 procedure GenerCodeHint(var controlCode: Iarr; var hint: SArr);
 begin
   if (MainForm.LVShowData.tag = -1) then begin
+<<<<<<< HEAD
     case workObjNow of  //0 nothing, 1 numberInput, 2 stringInput, 3 список
+=======
+    case workObjNow of  //0 nothing, 1 numberInput, 2 stringInput
+>>>>>>> bd800a676ceeab731b6b9cd520054051499a3819
       Teacher: controlCode:= [0, 2, 2, 2, 2];
       LearntSubject: controlCode:= [0, 2];
       Student: controlCode:= [0, 1, 1, 2, 2, 2];
@@ -206,7 +210,11 @@ begin
   end
   else begin
     case workObjNow of
+<<<<<<< HEAD
       Group: controlCode:= [0, 3, 0, 3, 0, 1, 1];
+=======
+      Group: controlCode:= [0, 1, 0, 1, 0, 1, 1];
+>>>>>>> bd800a676ceeab731b6b9cd520054051499a3819
     end;
   end;
   hint:= makeTitle(workObjNow);
