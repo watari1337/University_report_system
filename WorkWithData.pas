@@ -33,10 +33,10 @@ begin
   node:= objTGroup.headList^.Next;
   while (node <> nil) do begin
     arr:= node^.inf.arrSbj;
-    for var i := node^.inf.numSBJ downto 0 do begin   //important from last to first
+    for var i := node^.inf.numSBJ-1 downto 0 do begin   //important from last to first
       fastCase:= [arr[i].id, arr[i].sbj, arr[i].teacher, arr[i].hour, arr[i].credits];
-      if (id = fastCase[collum]) then begin 
-        if (index >= length(result)) then SetLength(result, Length(result)*2);        
+      if (id = fastCase[collum]) then begin
+        if (index >= length(result)) then SetLength(result, Length(result)*2);
         result[index].first:= node^.inf.id;
         result[index].second:= arr[i].id;
         inc(index);
@@ -194,7 +194,7 @@ end;
 procedure GenerCodeHint(var controlCode: Iarr; var hint: SArr);
 begin
   if (MainForm.LVShowData.tag = -1) then begin
-    case workObjNow of  //0 nothing, 1 numberInput, 2 stringInput
+    case workObjNow of  //0 nothing, 1 numberInput, 2 stringInput, 3 список
       Teacher: controlCode:= [0, 2, 2, 2, 2];
       LearntSubject: controlCode:= [0, 2];
       Student: controlCode:= [0, 1, 1, 2, 2, 2];
@@ -206,7 +206,7 @@ begin
   end
   else begin
     case workObjNow of
-      Group: controlCode:= [0, 1, 0, 1, 0, 1, 1];
+      Group: controlCode:= [0, 3, 0, 3, 0, 1, 1];
     end;
   end;
   hint:= makeTitle(workObjNow);

@@ -118,6 +118,7 @@ type
         function GetByIndex(num: integer): T;
         function Count: integer;
         function FreeId: integer;
+        Function NumByID(id: integer): integer;
     end;
 
     //это для типизированного файла, а в проге ещё в каждом должен быть адрес
@@ -442,6 +443,26 @@ begin
     node:= node^.Next;
   end;
   result:= node^.inf;
+end;
+
+function BaseClass<T>.NumByID(id: integer): integer;
+var
+  Node: AdrNode;
+  noStop: boolean;
+  num: integer;
+begin
+  result:= 0;
+  num:= 0;
+  Node:= headList^.Next;
+  noStop:= true;
+  while (Node <> nil) and (noStop) do begin
+    if (SameId(Node^.inf, id)) then begin
+      noStop:= false;
+      result:= num;
+    end;
+    inc(num);
+    Node:= Node^.Next;
+  end;
 end;
 
 procedure BaseClass<T>.DoAfterAdd(inf: T);

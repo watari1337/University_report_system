@@ -121,11 +121,13 @@ procedure createAskForm(controlCode: Iarr; hint: SArr; firstText: VarArr);
 var
   btn: TButton;
   spin: TSpinEdit;
+  box: TComboBox;
   edit: TEdit;
   lable: Tlabel;
   captions: SArr;
   baseWidth, baseHeight, widthNow, HeightNow, shiftWidth1, shiftWidth2,
   shiftHeight, maxWidth, maxHeight, hieghLable: integer;
+  str: string;
 begin
   //free Form
   for var I := (FrmAddEditElement.PnEdit.ComponentCount-1) downto 0 do
@@ -175,6 +177,37 @@ begin
       edit.ShowHint:= true;
       edit.Text:= firstText[i];
       edit.tag:= i;
+    end
+    else if (controlCode[i] = 3) then begin
+      box:= TComboBox.Create(FrmAddEditElement.PnEdit);
+      box.Parent:= FrmAddEditElement.PnEdit;
+      box.Left:= widthNow;
+      box.Top:= heightNow + hieghLable + 5;
+      box.Width:= baseWidth;
+      box.Height:= baseHeight;
+      box.Tag:= i;
+      box.Hint:= hint[i];
+      box.ShowHint:= true;
+      if (hint[i] = 'id предмета') then begin
+        with objTLearntSubject do begin
+          for var j:= 0 to Count-1 do begin
+            box.Items.Add(ReadT(GetByIndex(j))[1]);
+          end;
+          box.ItemIndex:= NumByID(firstText[i]);
+        end;
+      end
+      else if (hint[i] = 'id учителя') then begin
+        with objTTeacher do begin
+          for var j:= 0 to Count-1 do begin
+            str:= ReadT(GetByIndex(j))[3] + ' ' + ReadT(GetByIndex(j))[2] + ' ' +
+            ReadT(GetByIndex(j))[4];
+            box.Items.Add(str);
+          end;
+          box.ItemIndex:= NumByID(firstText[i]);
+        end;
+      end;
+
+
     end;
 
     if (controlCode[i] <> 0) then begin
@@ -233,6 +266,18 @@ begin
         result[control.Tag]:= (control as TEdit).Text;
       if (control is TSpinEdit) then
         result[control.Tag]:= (control as TSpinEdit).Value;
+      if (control is TComboBox) then begin
+        if (control.Hint = 'id предмета') then begin
+          with objTLearntSubject do begin
+            result[control.Tag]:= ReadT( GetByIndex((control as TComboBox).ItemIndex))[0];
+          end;
+        end
+        else if (control.Hint = 'id учителя') then begin
+          with objTTeacher do begin
+            result[control.Tag]:= ReadT( GetByIndex((control as TComboBox).ItemIndex))[0];
+          end;
+        end;
+      end;
     end;
   end;
 end;

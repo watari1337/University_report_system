@@ -2,7 +2,7 @@ object MainForm: TMainForm
   Left = 0
   Top = 0
   Caption = 'MainForm'
-  ClientHeight = 590
+  ClientHeight = 584
   ClientWidth = 1010
   Color = clBtnFace
   DoubleBuffered = True
@@ -17,23 +17,23 @@ object MainForm: TMainForm
     Left = 0
     Top = 0
     Width = 1010
-    Height = 590
+    Height = 584
     ActivePage = PageMenu
     Align = alClient
     TabOrder = 0
     ExplicitWidth = 1008
-    ExplicitHeight = 582
+    ExplicitHeight = 576
     object PageMenu: TTabSheet
       Caption = 'PageMenu'
       TabVisible = False
       DesignSize = (
         1002
-        580)
+        574)
       object Image1: TImage
         Left = 0
         Top = 0
         Width = 1002
-        Height = 580
+        Height = 574
         Align = alClient
         Picture.Data = {
           0A544A504547496D61676510D60A00FFD8FFE000104A46494600010201004800
@@ -22231,6 +22231,7 @@ object MainForm: TMainForm
           000000000000000000000000000000000000000000000000000000001FFFD9}
         Stretch = True
         ExplicitLeft = 3
+        ExplicitHeight = 580
       end
       object Test: TButton
         Left = 48
@@ -22249,20 +22250,20 @@ object MainForm: TMainForm
         OnClick = TestClick
       end
       object ChangeData: TButton
-        Left = 720
-        Top = 214
+        Left = 723
+        Top = 209
         Width = 209
         Height = 49
         Anchors = []
         Caption = #1041#1072#1079#1072' '#1076#1072#1085#1085#1099#1093
         TabOrder = 1
         OnClick = ChangeDataClick
-        ExplicitLeft = 718
-        ExplicitTop = 211
+        ExplicitLeft = 721
+        ExplicitTop = 206
       end
       object createFile: TButton
-        Left = 720
-        Top = 131
+        Left = 723
+        Top = 130
         Width = 209
         Height = 49
         Anchors = []
@@ -22275,12 +22276,12 @@ object MainForm: TMainForm
         ParentFont = False
         TabOrder = 2
         OnClick = createFileClick
-        ExplicitLeft = 718
-        ExplicitTop = 129
+        ExplicitLeft = 721
+        ExplicitTop = 128
       end
       object btnExit: TButton
-        Left = 720
-        Top = 299
+        Left = 723
+        Top = 293
         Width = 209
         Height = 49
         Anchors = []
@@ -22293,13 +22294,13 @@ object MainForm: TMainForm
         ParentFont = False
         TabOrder = 3
         OnClick = btnExitClick
-        ExplicitLeft = 718
-        ExplicitTop = 295
+        ExplicitLeft = 721
+        ExplicitTop = 289
       end
       object ExitSave: TButton
         Tag = 1
-        Left = 720
-        Top = 386
+        Left = 723
+        Top = 384
         Width = 209
         Height = 49
         Anchors = []
@@ -22312,8 +22313,8 @@ object MainForm: TMainForm
         ParentFont = False
         TabOrder = 4
         OnClick = btnExitClick
-        ExplicitLeft = 718
-        ExplicitTop = 380
+        ExplicitLeft = 721
+        ExplicitTop = 378
       end
     end
     object PageCreateByPattern: TTabSheet
@@ -22324,7 +22325,7 @@ object MainForm: TMainForm
         Left = 817
         Top = 0
         Width = 185
-        Height = 580
+        Height = 574
         Align = alRight
         Color = clCream
         ParentBackground = False
@@ -22401,7 +22402,7 @@ object MainForm: TMainForm
         Left = 0
         Top = 0
         Width = 817
-        Height = 580
+        Height = 574
         Align = alClient
         TabOrder = 1
       end
@@ -22419,7 +22420,7 @@ object MainForm: TMainForm
         Left = 817
         Top = 0
         Width = 185
-        Height = 580
+        Height = 574
         Align = alRight
         Color = clCream
         ParentBackground = False
@@ -22502,14 +22503,14 @@ object MainForm: TMainForm
         Left = 0
         Top = 0
         Width = 817
-        Height = 580
+        Height = 574
         Align = alClient
         TabOrder = 1
         object LVShowData: TListView
           Left = 1
           Top = 1
           Width = 815
-          Height = 578
+          Height = 572
           Align = alClient
           Columns = <>
           OwnerData = True
@@ -22529,7 +22530,7 @@ object MainForm: TMainForm
         Left = 817
         Top = 0
         Width = 185
-        Height = 580
+        Height = 574
         Align = alRight
         Color = clCream
         ParentBackground = False
@@ -22555,7 +22556,7 @@ object MainForm: TMainForm
         Left = 0
         Top = 0
         Width = 817
-        Height = 580
+        Height = 574
         Align = alClient
         BevelOuter = bvLowered
         TabOrder = 1
